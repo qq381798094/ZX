@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 // 引入路由
 import router from '@/router'
+// 引入 pinia 仓库
+import pinia from './store'
 // 引入 Element-Plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -24,6 +26,9 @@ app.use(GlobalComponent)
 
 // 挂载 router
 app.use(router)
+
+// 挂载 pinia
+app.use(pinia)
 
 // 挂载 element-plus
 app.use(ElementPlus, {
