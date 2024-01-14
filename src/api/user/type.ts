@@ -13,7 +13,8 @@ export interface ILoginParams {
 
 // 登录接口返回参数类型
 export interface IDataType {
-  token: string
+  token?: string
+  message?: string
 }
 export interface ILoginResponseData extends IResponseData {
   data: IDataType

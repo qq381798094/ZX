@@ -45,6 +45,8 @@
   /** 组件引入 */
   import { ElNotification } from 'element-plus'
   import { User, Lock } from '@element-plus/icons-vue'
+  /** 工具引入 */
+  import { getTime } from '@/utils/time'
 
   // 路由实例化
   const $router = useRouter()
@@ -72,7 +74,8 @@
       $router.push('/')
       ElNotification({
         type: 'success',
-        message: '登录成功',
+        message: '欢迎回来',
+        title: `Hi~${getTime()}好`,
       })
       // 关闭按钮加载动画
       loading.value = false

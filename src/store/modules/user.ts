@@ -3,9 +3,12 @@ import { defineStore } from 'pinia'
 import { requestLoginAPI } from '@/api/user'
 /** 导入类型 */
 import type { ILoginParams } from '@/api/user/type'
+import type { IUserState } from '@/store/modules/types/userType.ts'
+/** 导入工具包 */
+import { SET_TOKEN } from '@/utils/token'
 
 export default defineStore('user', {
-  state: () => {
+  state: (): IUserState => {
     return {}
   },
   actions: {
@@ -15,7 +18,7 @@ export default defineStore('user', {
       //   判断返回结果返回相对应的 Promise 状态
       if (result.code === 200) {
         // 登录成功
-        localStorage.setItem('TOKEN', result.data.token)
+        SET_TOKEN(result.data.token as string)
         return 'ok'
       } else {
         // 登录失败
