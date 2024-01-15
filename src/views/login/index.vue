@@ -3,13 +3,18 @@
     <el-row>
       <el-col :span="14" :xs="0"></el-col>
       <el-col :span="10" :xs="24">
-        <el-form class="login-form">
+        <el-form
+          class="login-form"
+          :model="loginForm"
+          :rules="rules"
+          :ref="loginFormRefs"
+        >
           <h1>Hello</h1>
           <h2>欢迎来到甄选</h2>
-          <el-form-item>
+          <el-form-item prop="username">
             <el-input :prefix-icon="User" v-model="loginForm.username" />
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="password">
             <el-input
               type="password"
               :prefix-icon="Lock"
@@ -60,12 +65,40 @@
     password: '',
   })
 
+  /** 表单校验的配置 */
+  // 表单 ref 获取
+  const loginFormRefs = ref()
+  // 自定义 username 校验规则
+  const validatorUserName = (rule: any, value: any, callback: any) => {
+    if (/^\w{5,10}$/.test(value)) {
+      callback()
+    } else {
+      callback(new Error('账号长度需要在5-10位之间'))
+    }
+  }
+  // 自定义 password 校验规则
+  const validatorPassword = (rule: any, value: any, callback: any) => {
+    if (value.length >= 5) {
+      callback()
+    } else {
+      callback(new Error('密码长度至少为5位'))
+    }
+  }
+  // 规则配置
+  const rules = {
+    username: [{ validator: validatorUserName, trigger: 'change' }],
+    password: [{ validator: validatorPassword, trigger: 'change' }],
+  }
+
   // 控制登录按钮的加载动画
   const loading = ref(false)
   /** 登录按钮点击事件 */
   const loginClick = async () => {
     // 开启登录按钮的加载动画
     loading.value = true
+    // 检查表单验证是否通过
+    await loginFormRefs.value?.validate()
+
     // 1. 通知仓库发送登录请求
     // 2. 成功 -> 跳转到首页
     // 3. 失败 -> 弹出相应错误信息
