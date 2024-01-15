@@ -1,7 +1,9 @@
 <template>
   <div class="layout-container">
     <!-- 左侧菜单 -->
-    <div class="layout-slider"></div>
+    <div class="layout-slider">
+      <Logo />
+    </div>
     <!-- 顶部导航 -->
     <div class="layout-top-nav"></div>
     <!-- 内容展示 -->
@@ -9,7 +11,10 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  /** 引入组件 */
+  import Logo from './logo/index.vue'
+</script>
 
 <style scoped lang="scss">
   .layout-container {
