@@ -1,5 +1,11 @@
 <template>
-  <el-button type="primary" size="small" :icon="Refresh" circle></el-button>
+  <el-button
+    type="primary"
+    size="small"
+    :icon="Refresh"
+    circle
+    @click="refreshClick"
+  ></el-button>
   <el-button
     type="primary"
     size="small"
@@ -30,6 +36,11 @@
 
 <script setup lang="ts">
   import { FullScreen, Refresh, Setting } from '@element-plus/icons-vue'
+  /** 仓库引入 */
+  import useLayoutStore from '@/store/modules/layout'
+
+  /** 实例化仓库 */
+  let layoutStore = useLayoutStore()
 
   /** 功能按钮点击事件 */
   // 全屏点击事件
@@ -40,6 +51,11 @@
     } else {
       document.exitFullscreen()
     }
+  }
+  // 当前首页数据刷新点击事件
+  const refreshClick = () => {
+    // 调用 layout 仓库的方法
+    layoutStore.refreshRetreat()
   }
 </script>
 <script lang="ts">
