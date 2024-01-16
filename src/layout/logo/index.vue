@@ -1,13 +1,18 @@
 <template>
   <div class="logo-component" v-if="setting.logoIsHidden">
     <img :src="setting.logo" />
-    <span>{{ setting.title }}</span>
+    <p>{{ setting.title }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
   /** 引入标题和 logo 的配置文件 */
   import setting from '@/setting'
+</script>
+<script lang="ts">
+  export default {
+    name: 'Logo',
+  }
 </script>
 
 <style scoped lang="scss">
@@ -17,14 +22,14 @@
     width: 100%;
     height: $base-menu-logo-height;
     color: #fff;
-    padding: 20px;
+    padding: 10px;
 
     > img {
       width: 40px;
       height: 40px;
     }
 
-    > span {
+    > p {
       font-size: $base-menu-logo-title-fontSize;
       margin-left: 10px;
     }
