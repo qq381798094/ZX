@@ -1,6 +1,12 @@
 <template>
   <el-button type="primary" size="small" :icon="Refresh" circle></el-button>
-  <el-button type="primary" size="small" :icon="FullScreen" circle></el-button>
+  <el-button
+    type="primary"
+    size="small"
+    :icon="FullScreen"
+    circle
+    @click="fullScreen"
+  ></el-button>
   <el-button type="primary" size="small" :icon="Setting" circle></el-button>
   <!-- 用户信息 -->
   <img
@@ -24,6 +30,17 @@
 
 <script setup lang="ts">
   import { FullScreen, Refresh, Setting } from '@element-plus/icons-vue'
+
+  /** 功能按钮点击事件 */
+  // 全屏点击事件
+  const fullScreen = () => {
+    let full = document.fullscreenElement
+    if (!full) {
+      document.documentElement.requestFullscreen()
+    } else {
+      document.exitFullscreen()
+    }
+  }
 </script>
 <script lang="ts">
   export default {
