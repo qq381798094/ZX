@@ -3,10 +3,10 @@
     <!-- 没有子路由的情况 -->
     <template v-if="!item.children && !(item.meta as RouteMeta).hidden">
       <el-menu-item :index="item.path">
+        <el-icon>
+          <component :is="(item.meta as RouteMeta).icon" />
+        </el-icon>
         <template #title>
-          <el-icon>
-            <component :is="(item.meta as RouteMeta).icon" />
-          </el-icon>
           <span>{{ (item.meta as RouteMeta).title }}</span>
         </template>
       </el-menu-item>
@@ -20,10 +20,10 @@
       "
     >
       <el-menu-item :index="item.children[0].path">
+        <el-icon>
+          <component :is="(item.children[0].meta as RouteMeta).icon" />
+        </el-icon>
         <template #title>
-          <el-icon>
-            <component :is="(item.children[0].meta as RouteMeta).icon" />
-          </el-icon>
           <span>{{ (item.children[0].meta as RouteMeta).title }}</span>
         </template>
       </el-menu-item>

@@ -32,6 +32,8 @@
     > p {
       font-size: $base-menu-logo-title-fontSize;
       margin-left: 10px;
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
 </style>
