@@ -46,7 +46,7 @@
   /** 仓库引入 */
   import useUserStore from '@/store/modules/user'
   /** 路由引入 */
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   /** 组件引入 */
   import { ElNotification } from 'element-plus'
   import { User, Lock } from '@element-plus/icons-vue'
@@ -55,6 +55,7 @@
 
   // 路由实例化
   const $router = useRouter()
+  const $route = useRoute()
 
   // 仓库实例化
   let userSotre = useUserStore()
@@ -104,7 +105,8 @@
     // 3. 失败 -> 弹出相应错误信息
     try {
       await userSotre.loginStatus(loginForm)
-      $router.push('/')
+      // 跳转到首页或者是其他页面
+      $router.push(($route.query.redirect as string) || '/')
       ElNotification({
         type: 'success',
         message: '欢迎回来',

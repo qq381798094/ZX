@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 
 /** 类型约束导入 */
 import type { ILayoutState } from './types/layoutType'
-import { FOCUS_AFTER_RELEASED } from 'element-plus/lib/components/focus-trap/index.js'
 
 export default defineStore('layout', {
   state: (): ILayoutState => {

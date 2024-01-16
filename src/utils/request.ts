@@ -1,5 +1,7 @@
 /** 对 axios 进行二次封装 */
 import axios from 'axios'
+/** 导入工具包 */
+import { GET_TOKEN } from './token'
 
 const request = axios.create({
   // 基础路径
@@ -11,6 +13,9 @@ const request = axios.create({
 /** 添加请求拦截器 */
 request.interceptors.request.use((config) => {
   /** 存储 token */
+  if (GET_TOKEN()) {
+    config.headers.token = GET_TOKEN()
+  }
   // 返回配置对象
   return config
 })

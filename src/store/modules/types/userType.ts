@@ -1,1 +1,4 @@
-export interface IUserState {}
+export interface IUserState {
+  username: string
+  avatar: string
+}
