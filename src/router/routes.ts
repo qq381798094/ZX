@@ -47,6 +47,7 @@ export default [
     path: '/admin',
     component: () => import('@/layout/index.vue'),
     name: 'Admin',
+    redirect: '/admin/user',
     meta: {
       title: '权限管理',
       hidden: false,
@@ -90,6 +91,7 @@ export default [
     path: '/product',
     component: () => import('@/layout/index.vue'),
     name: 'Product',
+    redirect: '/product/brand',
     meta: {
       title: '商品管理',
       hidden: false,
