@@ -5,7 +5,7 @@ import { requestLoginAPI, requestUserInfoAPI } from '@/api/user'
 import type { ILoginParams, IUserInfoResponseData } from '@/api/user/type'
 import type { IUserState } from '@/store/modules/types/userType.ts'
 /** 导入工具包 */
-import { SET_TOKEN } from '@/utils/token'
+import { SET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
 
 export default defineStore('user', {
   state: (): IUserState => {
@@ -32,6 +32,7 @@ export default defineStore('user', {
     async getUserInfo() {
       const result: IUserInfoResponseData = await requestUserInfoAPI()
       if (result.code === 200) {
+        // 在仓库中设置用户名以及用户头像
         this.username = result.data.checkUser.username
         this.avatar = result.data.checkUser.avatar
         return result.data.checkUser
@@ -40,10 +41,11 @@ export default defineStore('user', {
         return Promise.reject(new Error('用户信息获取失败！'))
       }
     },
-    // 清空存储在仓库的用户信息【退出登录】
+    // 清空存储在仓库的用户信息，以及清除 TOKEN【退出登录】
     loginOut() {
       this.username = ''
       this.avatar = ''
+      REMOVE_TOKEN()
     },
   },
   getters: {},

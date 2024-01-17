@@ -1,8 +1,10 @@
 import { createApp } from 'vue'
-// 引入路由
-import router from '@/router'
 // 引入 pinia 仓库
 import pinia from './store'
+// 引入路由
+import router from '@/router'
+// 引入路由鉴权
+import './permission'
 // 引入 Element-Plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'

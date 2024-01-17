@@ -43,8 +43,6 @@
   /** EL组件 */
   import { ElNotification } from 'element-plus'
   import { FullScreen, Refresh, Setting } from '@element-plus/icons-vue'
-  /** 工具引入 */
-  import { REMOVE_TOKEN } from '@/utils/token'
 
   /** 实例化 vue-router 方法 */
   let $router = useRouter()
@@ -73,17 +71,15 @@
   }
   // 退出登录点击事件
   const loginOut = async () => {
-    // 1. 清空仓库的用户信息数据
+    // 1. 清空仓库的用户信息数据以及本地 TOKEN
     userStore.loginOut()
-    // 2. 清空本地 TOKEN
-    REMOVE_TOKEN()
-    // 3. 跳转到 login 页面, 并携带当前页面
+    // 2. 跳转到 login 页面, 并携带当前页面
     await $router.replace({ path: '/login', query: { redirect: $route.path } })
-    // 4. 弹框
+    // 3. 弹框
     ElNotification({
       type: 'success',
       message: '成功登出账号',
-      title: '温馨提示提示',
+      title: '温馨提示',
     })
   }
 </script>
