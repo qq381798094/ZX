@@ -7,6 +7,12 @@ import {
 } from '@/api/user'
 /** 导入类型 */
 import type { IUserState } from '@/store/modules/types/userType.ts'
+import {
+  ILoginParams,
+  ILoginResponseData,
+  IUserInfoResponseData,
+  ILoginOutResponseData,
+} from '@/api/user/type'
 /** 导入工具包 */
 import { SET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
 
@@ -19,12 +25,12 @@ export default defineStore('User', {
   },
   actions: {
     // 用户登录
-    async loginStatus(data: any) {
-      const result = await requestLoginAPI(data)
+    async loginStatus(data: ILoginParams) {
+      const result: ILoginResponseData = await requestLoginAPI(data)
       //   判断返回结果返回相对应的 Promise 状态
       if (result.code === 200) {
         // 登录成功
-        SET_TOKEN(result.data as string)
+        SET_TOKEN(result.data)
         return 'ok'
       } else {
         // 登录失败
@@ -33,7 +39,7 @@ export default defineStore('User', {
     },
     // 获取用户信息
     async getUserInfo() {
-      const result: any = await requestUserInfoAPI()
+      const result: IUserInfoResponseData = await requestUserInfoAPI()
 
       if (result.code === 200) {
         // 在仓库中设置用户名以及用户头像
@@ -47,7 +53,7 @@ export default defineStore('User', {
     },
     // 清空存储在仓库的用户信息，以及清除 TOKEN【退出登录】
     async loginOut() {
-      const result = await requestLoginOutAPI()
+      const result: ILoginOutResponseData = await requestLoginOutAPI()
       if (result.code === 200) {
         this.username = ''
         this.avatar = ''

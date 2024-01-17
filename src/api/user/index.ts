@@ -2,6 +2,12 @@
 import request from '@/utils/request'
 
 /** 类型导入 */
+import {
+  ILoginParams,
+  ILoginResponseData,
+  IUserInfoResponseData,
+  ILoginOutResponseData,
+} from './type'
 
 // 接口管理
 enum API {
@@ -11,12 +17,13 @@ enum API {
 }
 
 // 登录接口方法
-export const requestLoginAPI = (data: any) =>
-  request.post<any, any>(API.LOGIN_URL, data)
+export const requestLoginAPI = (data: ILoginParams) =>
+  request.post<any, ILoginResponseData>(API.LOGIN_URL, data)
 
 // 获取用户信息接口方法
-export const requestUserInfoAPI = () => request.get<any, any>(API.USERINFO_URL)
+export const requestUserInfoAPI = () =>
+  request.get<any, IUserInfoResponseData>(API.USERINFO_URL)
 
 // 用户退出登录接口方法
 export const requestLoginOutAPI = () =>
-  request.post<any, any>(API.LOGIN_OUT_URL)
+  request.post<any, ILoginOutResponseData>(API.LOGIN_OUT_URL)
