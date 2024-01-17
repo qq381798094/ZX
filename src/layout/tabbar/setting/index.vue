@@ -72,7 +72,7 @@
   // 退出登录点击事件
   const loginOut = async () => {
     // 1. 清空仓库的用户信息数据以及本地 TOKEN
-    userStore.loginOut()
+    await userStore.loginOut()
     // 2. 跳转到 login 页面, 并携带当前页面
     await $router.replace({ path: '/login', query: { redirect: $route.path } })
     // 3. 弹框

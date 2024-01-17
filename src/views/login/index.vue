@@ -62,8 +62,8 @@
 
   /** 收集账号与密码的数据 */
   let loginForm = reactive({
-    username: '',
-    password: '',
+    username: 'admin',
+    password: 'atguigu123',
   })
 
   /** 表单校验的配置 */
@@ -118,6 +118,7 @@
       ElNotification({
         type: 'error',
         message: (error as Error).message,
+        title: '警告',
       })
       // 关闭按钮加载动画
       loading.value = false

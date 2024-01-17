@@ -1,13 +1,16 @@
 import { defineStore } from 'pinia'
 /** 导入接口 */
-import { requestLoginAPI, requestUserInfoAPI } from '@/api/user'
+import {
+  requestLoginAPI,
+  requestUserInfoAPI,
+  requestLoginOutAPI,
+} from '@/api/user'
 /** 导入类型 */
-import type { ILoginParams, IUserInfoResponseData } from '@/api/user/type'
 import type { IUserState } from '@/store/modules/types/userType.ts'
 /** 导入工具包 */
 import { SET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
 
-export default defineStore('user', {
+export default defineStore('User', {
   state: (): IUserState => {
     return {
       username: '',
@@ -16,36 +19,43 @@ export default defineStore('user', {
   },
   actions: {
     // 用户登录
-    async loginStatus(data: ILoginParams) {
+    async loginStatus(data: any) {
       const result = await requestLoginAPI(data)
       //   判断返回结果返回相对应的 Promise 状态
       if (result.code === 200) {
         // 登录成功
-        SET_TOKEN(result.data.token as string)
+        SET_TOKEN(result.data as string)
         return 'ok'
       } else {
         // 登录失败
-        return Promise.reject(new Error(result.data.message))
+        return Promise.reject(new Error(result.data))
       }
     },
     // 获取用户信息
     async getUserInfo() {
-      const result: IUserInfoResponseData = await requestUserInfoAPI()
+      const result: any = await requestUserInfoAPI()
+
       if (result.code === 200) {
         // 在仓库中设置用户名以及用户头像
-        this.username = result.data.checkUser.username
-        this.avatar = result.data.checkUser.avatar
-        return result.data.checkUser
+        this.username = result.data.name
+        this.avatar = result.data.avatar
+        return result.data
       } else {
         // 用户信息获取失败
-        return Promise.reject(new Error('用户信息获取失败！'))
+        return Promise.reject(new Error(result.message))
       }
     },
     // 清空存储在仓库的用户信息，以及清除 TOKEN【退出登录】
-    loginOut() {
-      this.username = ''
-      this.avatar = ''
-      REMOVE_TOKEN()
+    async loginOut() {
+      const result = await requestLoginOutAPI()
+      if (result.code === 200) {
+        this.username = ''
+        this.avatar = ''
+        REMOVE_TOKEN()
+        return 'ok'
+      } else {
+        return Promise.reject(new Error(result.message))
+      }
     },
   },
   getters: {},
