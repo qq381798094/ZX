@@ -36,3 +36,10 @@ export interface IGetBrandResponseByPageData extends IBrandResponseData {
     records: TRecordsItem[]
   }
 }
+
+// 新增品牌或者修改已有品牌：携带参数的类型约束
+export type TAddOrUpdateBrandParams = {
+  id?: number
+  tmName: string
+  logoUrl: string
+}
