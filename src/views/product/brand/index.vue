@@ -8,7 +8,9 @@
       <el-table-column prop="tmName" label="品牌名称" align="center" />
       <el-table-column label="品牌 Logo" align="center">
         <template #="{ row }">
-          <img class="brand-img" :src="row.logoUrl" alt="图片加载出错" />
+          <div class="brand-img">
+            <img :src="row.logoUrl" alt="图片加载出错" />
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="品牌操作" align="center">
@@ -20,6 +22,8 @@
     </el-table>
     <!-- 分页器 -->
     <el-pagination
+      @size-change="pageSizeChange"
+      @current-change="currentPageChange"
       v-model:current-page="pageNo"
       v-model:page-size="pageLimit"
       :page-sizes="[3, 5, 7, 9]"
@@ -56,6 +60,17 @@
   const pageLimit = ref<number>(3)
   // 数据总条数
   const totalData = ref<number>(0)
+  // page-size 更改时触发
+  const pageSizeChange = () => {
+    pageNo.value = 1
+    // 重新获取一次页面数据
+    getHasBrandData()
+  }
+  // current-page 更改时触发
+  const currentPageChange = () => {
+    // 重新获取一次页面数据
+    getHasBrandData()
+  }
 
   /** 数据请求方法 */
   // 请求已有的品牌数据【需要 page && limit 】
@@ -85,5 +100,11 @@
     width: 50px;
     height: 50px;
     border-radius: 5px;
+    margin: 0 auto;
+
+    > img {
+      width: 100%;
+      height: 100%;
+    }
   }
 </style>
