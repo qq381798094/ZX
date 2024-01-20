@@ -1,99 +1,101 @@
 <template>
-  <el-card class="box-card">
-    <!-- 顶部添加品牌按钮 -->
-    <el-button
-      type="primary"
-      size="default"
-      :icon="Plus"
-      @click="openChangeOrCreateBrand({})"
-    >
-      添加品牌
-    </el-button>
-    <!-- 表格：展示已有品牌数据 -->
-    <el-table :data="brandList" style="margin: 20px 0" border>
-      <el-table-column type="index" label="序号" align="center" width="80" />
-      <el-table-column prop="tmName" label="品牌名称" align="center" />
-      <el-table-column label="品牌 Logo" align="center">
-        <template #="{ row }">
-          <div class="brand-img">
-            <img :src="row.logoUrl" alt="图片加载出错" />
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="品牌操作" align="center">
-        <template #="{ row, $index }">
-          <!-- 编辑 -->
-          <el-button
-            type="warning"
-            :icon="Edit"
-            size="small"
-            @click="openChangeOrCreateBrand(row)"
-          />
-          <!-- 删除 -->
-          <el-popconfirm
-            :title="`您确定要删除${row.tmName}吗`"
-            width="240"
-            :icon="DeleteFilled"
-            icon-color="#F56C6C"
-            @confirm="deleteCurrentBrand(row)"
-          >
-            <template #reference>
-              <el-button type="danger" :icon="Delete" size="small" />
-            </template>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页器 -->
-    <el-pagination
-      @size-change="pageSizeChange"
-      @current-change="currentPageChange"
-      v-model:current-page="pageNo"
-      v-model:page-size="pageLimit"
-      :page-sizes="[3, 5, 7, 9]"
-      background
-      layout="prev, pager, next, jumper, -> ,sizes, total"
-      :total="totalData"
-    />
-  </el-card>
+  <div>
+    <el-card class="box-card">
+      <!-- 顶部添加品牌按钮 -->
+      <el-button
+        type="primary"
+        size="default"
+        :icon="Plus"
+        @click="openChangeOrCreateBrand({})"
+      >
+        添加品牌
+      </el-button>
+      <!-- 表格：展示已有品牌数据 -->
+      <el-table :data="brandList" style="margin: 20px 0" border>
+        <el-table-column type="index" label="序号" align="center" width="80" />
+        <el-table-column prop="tmName" label="品牌名称" align="center" />
+        <el-table-column label="品牌 Logo" align="center">
+          <template #="{ row }">
+            <div class="brand-img">
+              <img :src="row.logoUrl" alt="图片加载出错" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="品牌操作" align="center">
+          <template #="{ row, $index }">
+            <!-- 编辑 -->
+            <el-button
+              type="warning"
+              :icon="Edit"
+              size="small"
+              @click="openChangeOrCreateBrand(row)"
+            />
+            <!-- 删除 -->
+            <el-popconfirm
+              :title="`您确定要删除${row.tmName}吗`"
+              width="240"
+              :icon="DeleteFilled"
+              icon-color="#F56C6C"
+              @confirm="deleteCurrentBrand(row)"
+            >
+              <template #reference>
+                <el-button type="danger" :icon="Delete" size="small" />
+              </template>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页器 -->
+      <el-pagination
+        @size-change="pageSizeChange"
+        @current-change="currentPageChange"
+        v-model:current-page="pageNo"
+        v-model:page-size="pageLimit"
+        :page-sizes="[3, 5, 7, 9]"
+        background
+        layout="prev, pager, next, jumper, -> ,sizes, total"
+        :total="totalData"
+      />
+    </el-card>
 
-  <!-- 添加 && 修改品牌数据时弹出该对话框 -->
-  <el-dialog v-model="dialogVisible" :title="dialogTitle">
-    <!-- 中间内容区域 -->
-    <el-form
-      style="width: 80%"
-      ref="brandFormRef"
-      :model="brandParams"
-      :rules="rules"
-    >
-      <el-form-item label="品牌名称" prop="tmName" label-width="100px">
-        <el-input v-model="brandParams.tmName" placeholder="请输入品牌名称" />
-      </el-form-item>
-      <el-form-item label="品牌 LOGO" prop="logoUrl" label-width="100px">
-        <el-upload
-          class="avatar-uploader"
-          action="/api/admin/product/fileUpload"
-          :show-file-list="false"
-          :on-success="handleBrandImgSuccess"
-          :before-upload="beforeBrandImgUpload"
-        >
-          <img
-            v-if="brandParams.logoUrl"
-            :src="brandParams.logoUrl"
-            class="avatar"
-          />
-          <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-        </el-upload>
-      </el-form-item>
-    </el-form>
-    <!-- 底部按钮部分 -->
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogConfirm">确定</el-button>
-      </span>
-    </template>
-  </el-dialog>
+    <!-- 添加 && 修改品牌数据时弹出该对话框 -->
+    <el-dialog v-model="dialogVisible" :title="dialogTitle">
+      <!-- 中间内容区域 -->
+      <el-form
+        style="width: 80%"
+        ref="brandFormRef"
+        :model="brandParams"
+        :rules="rules"
+      >
+        <el-form-item label="品牌名称" prop="tmName" label-width="100px">
+          <el-input v-model="brandParams.tmName" placeholder="请输入品牌名称" />
+        </el-form-item>
+        <el-form-item label="品牌 LOGO" prop="logoUrl" label-width="100px">
+          <el-upload
+            class="avatar-uploader"
+            action="/api/admin/product/fileUpload"
+            :show-file-list="false"
+            :on-success="handleBrandImgSuccess"
+            :before-upload="beforeBrandImgUpload"
+          >
+            <img
+              v-if="brandParams.logoUrl"
+              :src="brandParams.logoUrl"
+              class="avatar"
+            />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮部分 -->
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="dialogConfirm">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup lang="ts">
