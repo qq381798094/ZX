@@ -22,13 +22,25 @@
       </el-table-column>
       <el-table-column label="品牌操作" align="center">
         <template #="{ row, $index }">
+          <!-- 编辑 -->
           <el-button
             type="warning"
             :icon="Edit"
             size="small"
             @click="openChangeOrCreateBrand(row)"
           />
-          <el-button type="danger" :icon="Delete" size="small" />
+          <!-- 删除 -->
+          <el-popconfirm
+            :title="`您确定要删除${row.tmName}吗`"
+            width="240"
+            :icon="DeleteFilled"
+            icon-color="#F56C6C"
+            @confirm="deleteCurrentBrand(row)"
+          >
+            <template #reference>
+              <el-button type="danger" :icon="Delete" size="small" />
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -86,13 +98,14 @@
 
 <script setup lang="ts">
   /** EL 组件引入 */
-  import { Delete, Edit, Plus } from '@element-plus/icons-vue'
+  import { Delete, DeleteFilled, Edit, Plus } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import type { FormInstance, FormRules, UploadProps } from 'element-plus'
   /** 接口引入 */
   import {
     requestGetHasBrandByPageAPI,
     requestAddOrUpdateBrandAPI,
+    requestDeleteBrandByIdAPI,
   } from '@/api/product/brand'
   /** 类型引入 */
   import {
@@ -229,6 +242,28 @@
     brandFormRef.value?.clearValidate('logoUrl')
   }
 
+  /** 删除品牌的 数据 && 方法 */
+  // 气泡提示框<确定>按钮回调事件
+  const deleteCurrentBrand = async (item: TRecordsItem) => {
+    try {
+      // 调用请求删除品牌数据方法
+      await deleteBrandByIdData(item.id as number)
+      // 提示框
+      ElMessage({
+        type: 'success',
+        message: '删除品牌成功',
+      })
+      // 再次获取数据
+      getHasBrandData()
+    } catch (error) {
+      // 提示框
+      ElMessage({
+        type: 'error',
+        message: '删除品牌失败',
+      })
+    }
+  }
+
   /** 分页器组件数据&&方法 */
   // 当前页码
   const pageNo = ref<number>(1)
@@ -272,6 +307,16 @@
       return result.message
     } else {
       // 添加失败
+      return Promise.reject(new Error(result.message))
+    }
+  }
+
+  // 删除已有品牌数据
+  const deleteBrandByIdData = async (id: number) => {
+    const result = await requestDeleteBrandByIdAPI(id)
+    if (result.code === 200) {
+      return 'ok'
+    } else {
       return Promise.reject(new Error(result.message))
     }
   }

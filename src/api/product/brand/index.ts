@@ -16,6 +16,8 @@ enum API {
   POST_ADD_BRAND_URL = '/admin/product/baseTrademark/save',
   // 修改已有品牌数据接口
   PUT_UPDATE_BRAND_URL = '/admin/product/baseTrademark/update',
+  // 删除已有品牌数据接口
+  DELETE_BRAND_URL = '/admin/product/baseTrademark/remove/',
 }
 
 /** 接口方法 */
@@ -36,3 +38,7 @@ export const requestAddOrUpdateBrandAPI = (data: TAddOrUpdateBrandParams) => {
     return request.post<any, any>(API.POST_ADD_BRAND_URL, data)
   }
 }
+
+// 删除已有品牌数据接口
+export const requestDeleteBrandByIdAPI = (id: number) =>
+  request.delete<any, any>(API.DELETE_BRAND_URL + id)
