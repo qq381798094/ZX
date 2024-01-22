@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 三级分类全局组件 -->
-    <CategoryCard @request="requestAttrList" @clear="handleClearTableData" />
+    <CategoryCard />
     <!-- 搜索结果展示平台卡片 -->
     <el-card class="result-card">
       <!-- 添加平台属性按钮 -->
@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
   /** API 引入 */
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
   /** EL 组件引入 */
   import { Plus, Edit, Delete } from '@element-plus/icons-vue'
   /** 接口引入 */
@@ -69,15 +69,18 @@
   /** 仓库实例化 */
   let categoryStore = useCategoryStore()
 
-  /** 子组件 Category 的 数据&&方法 */
-  // 清空表格数据
-  const handleClearTableData = () => {
-    attributeList.value = []
-  }
-  // 请求表格数据
-  const requestAttrList = () => {
-    fetchAttributeListData()
-  }
+  /** 该 watch 监听仓库中的 category3Id */
+  watch(
+    () => categoryStore.thirdCategoryId,
+    () => {
+      // 清空表格数组
+      attributeList.value = []
+      // 3Id 没有值，不做事
+      if (!categoryStore.thirdCategoryId) return
+      // 有值触发数据请求
+      fetchAttributeListData()
+    },
+  )
 
   /** 数据请求方法合集 */
   // 获取属性和属性值的数据

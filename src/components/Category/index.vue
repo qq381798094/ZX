@@ -28,10 +28,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="三级分类">
-        <el-select
-          v-model="categoryStore.thirdCategoryId"
-          @change="thirdCategorySelected"
-        >
+        <el-select v-model="categoryStore.thirdCategoryId">
           <el-option
             v-for="item in categoryStore.thirdCategoryList"
             :key="item.value"
@@ -50,9 +47,6 @@
   /** 引入仓库 */
   import useCategoryStore from '@/store/modules/category'
 
-  /** 自定义事件 */
-  const emits = defineEmits(['request', 'clear'])
-
   /** 组件挂载后调用 */
   onMounted(() => {
     // 获取一级分类的数据
@@ -70,23 +64,16 @@
     categoryStore.clearThirdCategoryList()
     categoryStore.clearThirdCategoryId()
     getSecondCategoryListData()
-    // 清空表格数据
-    emits('clear')
   }
   // 二级 select：@change
   const secondCategorySelected = () => {
     // 清空三级分类的 id
     categoryStore.clearThirdCategoryId()
     getThirdCategoryListData()
-    // 清空表格数据
-    emits('clear')
   }
   // 三级 select: @change
-  const thirdCategorySelected = () => {
-    // 向父组件抛出一个事件
-    emits('clear')
-    emits('request')
-  }
+  // const thirdCategorySelected = () => {
+  // }
 
   /** 请求数据方法 */
   // 获取一级分类菜单数据
