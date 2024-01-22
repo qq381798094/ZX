@@ -5,7 +5,13 @@
     <!-- 搜索结果展示平台卡片 -->
     <el-card class="result-card">
       <!-- 添加平台属性按钮 -->
-      <el-button :icon="Plus" type="primary">添加平台属性</el-button>
+      <el-button
+        :icon="Plus"
+        type="primary"
+        :disabled="categoryStore.thirdCategoryId ? false : true"
+      >
+        添加平台属性
+      </el-button>
       <!-- 表格 -->
       <el-table class="result-table" border stripe>
         <el-table-colum label="序号" type="index" align="center" width="80px" />
@@ -21,6 +27,11 @@
   /** API 引入 */
   /** EL 组件引入 */
   import { Plus } from '@element-plus/icons-vue'
+  /** 仓库引入 */
+  import useCategoryStore from '@/store/modules/category'
+
+  /** 仓库实例化 */
+  let categoryStore = useCategoryStore()
 </script>
 <script lang="ts">
   export default {
