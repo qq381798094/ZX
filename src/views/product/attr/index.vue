@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 三级分类全局组件 -->
-    <CategoryCard v-model="result" />
+    <CategoryCard />
     <!-- 搜索结果展示平台卡片 -->
     <el-card class="result-card">
       <!-- 添加平台属性按钮 -->
@@ -19,11 +19,8 @@
 
 <script setup lang="ts">
   /** API 引入 */
-  import { ref } from 'vue'
   /** EL 组件引入 */
   import { Plus } from '@element-plus/icons-vue'
-
-  const result = ref('xz、xx、xxs')
 </script>
 <script lang="ts">
   export default {

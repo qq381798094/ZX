@@ -2,7 +2,7 @@
 import request from '@/utils/request'
 
 /** 类型约束 */
-// import {} from './type'
+import { TCategoryResponseData } from './type'
 
 /** 接口地址枚举 */
 enum API {
@@ -16,12 +16,16 @@ enum API {
 
 // 获取一级分类数据接口
 export const requestFirstCategoryData = () =>
-  request.get<any, any>(API.GET_FIRST_CATEGORY_URL)
+  request.get<any, TCategoryResponseData>(API.GET_FIRST_CATEGORY_URL)
 
 // 获取二级分类数据接口
 export const requestSecondCategoryByFirstIdData = (category1Id: number) =>
-  request.get<any, any>(API.GET_SECOND_CATEGORY_BY_ID_URL + category1Id)
+  request.get<any, TCategoryResponseData>(
+    API.GET_SECOND_CATEGORY_BY_ID_URL + category1Id,
+  )
 
 // 获取三级分类数据接口
 export const requestThirdCategoryBySecondIdData = (category2Id: number) =>
-  request.get<any, any>(API.GET_THIRD_CATEGORY_BY_ID_URL + category2Id)
+  request.get<any, TCategoryResponseData>(
+    API.GET_THIRD_CATEGORY_BY_ID_URL + category2Id,
+  )
