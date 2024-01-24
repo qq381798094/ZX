@@ -2,7 +2,12 @@
 import request from '@/utils/request'
 
 /** 类型约束 */
-import { TCategoryResponseData, TAttrResponseData } from './type'
+import {
+  TCategoryResponseData,
+  TAttrResponseData,
+  IAttributeParams,
+  TAddOrUpdateAttributeResponseData,
+} from './type'
 
 /** 接口地址枚举 */
 enum API {
@@ -14,6 +19,8 @@ enum API {
   GET_THIRD_CATEGORY_BY_ID_URL = '/admin/product/getCategory3/',
   // 获取分类下已有的属性与属性值
   GET_ATTR_INFO_BY_CATEGORY_ID_URL = '/admin/product/attrInfoList/',
+  // 添加 or 修改已有的属性值
+  ADD_UPDATE_ATTRIBUTE_INFO_URL = '/admin/product/saveAttrInfo',
 }
 
 // 获取一级分类数据接口
@@ -41,4 +48,11 @@ export const requestGetAttrInfoByCategoryIdData = (
   request.get<any, TAttrResponseData>(
     API.GET_ATTR_INFO_BY_CATEGORY_ID_URL +
       `${category1Id}/${category2Id}/${category3Id}`,
+  )
+
+// 添加 or 修改已有的属性值
+export const requestPostAddOrUpdateAttrData = (data: IAttributeParams) =>
+  request.post<any, TAddOrUpdateAttributeResponseData>(
+    API.ADD_UPDATE_ATTRIBUTE_INFO_URL,
+    data,
   )

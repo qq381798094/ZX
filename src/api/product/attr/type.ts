@@ -36,3 +36,21 @@ export interface IAttrResponseDataItem {
 }
 
 export type TAttrResponseData = IResponseData<IAttrResponseDataItem[]>
+
+// 添加或修改属性值： 携带的参数类型
+export interface IAttributeValueParams {
+  id?: number
+  attrId?: number
+  valueName: string
+}
+
+export interface IAttributeParams {
+  id?: number
+  attrName: string
+  categoryId: number | undefined
+  categoryLevel: number
+  attrValueList: IAttributeValueParams[]
+}
+
+// 添加或修改属性值： 接口返回的结果类型约束
+export type TAddOrUpdateAttributeResponseData = IResponseData<string | null>
