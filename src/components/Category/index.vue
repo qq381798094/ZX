@@ -3,6 +3,7 @@
     <el-form inline>
       <el-form-item label="一级分类">
         <el-select
+          :disabled="props.disabled"
           v-model="categoryStore.firstCategoryId"
           @change="firstCategorySelected"
         >
@@ -16,6 +17,7 @@
       </el-form-item>
       <el-form-item label="二级分类">
         <el-select
+          :disabled="props.disabled"
           v-model="categoryStore.secondCategoryId"
           @change="secondCategorySelected"
         >
@@ -28,7 +30,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="三级分类">
-        <el-select v-model="categoryStore.thirdCategoryId">
+        <el-select
+          :disabled="props.disabled"
+          v-model="categoryStore.thirdCategoryId"
+        >
           <el-option
             v-for="item in categoryStore.thirdCategoryList"
             :key="item.value"
@@ -46,6 +51,11 @@
   import { onMounted } from 'vue'
   /** 引入仓库 */
   import useCategoryStore from '@/store/modules/category'
+
+  /** 获取父组件传来的值 */
+  const props = defineProps<{
+    disabled: boolean
+  }>()
 
   /** 组件挂载后调用 */
   onMounted(() => {
@@ -71,9 +81,6 @@
     categoryStore.clearThirdCategoryId()
     getThirdCategoryListData()
   }
-  // 三级 select: @change
-  // const thirdCategorySelected = () => {
-  // }
 
   /** 请求数据方法 */
   // 获取一级分类菜单数据
