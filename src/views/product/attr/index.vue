@@ -90,11 +90,13 @@
           />
           <el-table-column label="属性值名称">
             <template #="{ row, $index }">
+              <!-- :ref -> 存储 input 的实例到 inputRefArr  -->
               <el-input
+                :ref="(el: any) => (inputRefArr[$index] = el)"
+                v-show="row.stateFlag"
                 v-model="row.valueName"
                 placeholder="请输入属性值名称"
                 @blur="changeState(row, false, $index)"
-                v-show="row.stateFlag"
               />
               <div
                 @click="changeState(row, true, $index)"
@@ -105,7 +107,16 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="属性值操作" width="200px" align="center" />
+          <el-table-column label="属性值操作" width="200px">
+            <template #="{ row, $index }">
+              <el-button
+                :icon="Delete"
+                @click="addAttributeParams.attrValueList.splice($index, 1)"
+                type="danger"
+                size="small"
+              />
+            </template>
+          </el-table-column>
         </el-table>
 
         <!-- 表格操作按钮 -->
@@ -127,7 +138,7 @@
 
 <script setup lang="ts">
   /** API 引入 */
-  import { ref, watch, reactive } from 'vue'
+  import { ref, watch, reactive, nextTick } from 'vue'
   /** EL 组件引入 */
   import { Plus, Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
@@ -194,6 +205,10 @@
       // true -> 编辑状态 || false -> 只读状态
       stateFlag: true,
     })
+    // 获取最后的 input 实例将其标记为聚焦状态
+    nextTick(() => {
+      inputRefArr.value[addAttributeParams.attrValueList.length - 1].focus()
+    })
   }
   // 保存属性值按钮 -> @click : 保存新添加的属性值数据
   const handleSaveAttributeValue = async () => {
@@ -231,8 +246,8 @@
     flag: boolean,
     $index: number,
   ) => {
+    // 编辑状态 -> 只读状态
     if (!flag) {
-      // 编辑状态 -> 只读状态
       // 非法情况： 输入值为空时
       if (row.valueName.trim() === '') {
         addAttributeParams.attrValueList.splice($index, 1)
@@ -258,8 +273,25 @@
         return
       }
     }
+    // 只读状态 -> 编辑状态
+    if (flag) {
+      // 将其他的属性值状态设置为只读
+      addAttributeParams.attrValueList.forEach((item) => {
+        if (row === item) {
+          return
+        }
+        item.stateFlag = false
+      })
+      // 将当前点击的 input 状态设置为聚焦状态
+      nextTick(() => {
+        inputRefArr.value[$index].focus()
+      })
+    }
     row.stateFlag = flag
   }
+  /** 1. 实现 input 框自动聚焦功能 数据 && 方法 */
+  // 用于存储 input 的 ref 实例元素
+  let inputRefArr = ref<any[]>([])
 
   /** 数据请求方法合集 */
   // 获取属性和属性值的数据
