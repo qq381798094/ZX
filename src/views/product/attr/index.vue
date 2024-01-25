@@ -89,18 +89,34 @@
             align="center"
           />
           <el-table-column label="属性值名称">
-            <template #="{ row }">
+            <template #="{ row, $index }">
               <el-input
                 v-model="row.valueName"
                 placeholder="请输入属性值名称"
+                @blur="changeState(row, false, $index)"
+                v-show="row.stateFlag"
               />
+              <div
+                @click="changeState(row, true, $index)"
+                class="value-name"
+                v-show="!row.stateFlag"
+              >
+                {{ row.valueName }}
+              </div>
             </template>
           </el-table-column>
           <el-table-column label="属性值操作" width="200px" align="center" />
         </el-table>
 
         <!-- 表格操作按钮 -->
-        <el-button type="primary" @click="handleSaveAttributeValue">
+        <el-button
+          type="primary"
+          @click="handleSaveAttributeValue"
+          :disabled="
+            addAttributeParams.attrValueList.length == 0 ||
+            addAttributeParams.attrValueList[0].valueName === ''
+          "
+        >
           保存
         </el-button>
         <el-button @click="cancelAttributeShowCard">取消</el-button>
@@ -126,6 +142,7 @@
     IAttrResponseDataItem,
     IAttributeParams,
     TAddOrUpdateAttributeResponseData,
+    IAttributeValueParams,
   } from '@/api/product/attr/type'
   /** 仓库引入 */
   import useCategoryStore from '@/store/modules/category'
@@ -146,7 +163,7 @@
     },
   )
 
-  /** 添加属性操作相关 */
+  /** 添加平台属性操作相关 */
   // 控制显示的页面
   const isAddAttribute = ref<boolean>(false)
   // 添加平台属性按钮 -> @click ： 设置显示的 card 内容为添加属性值内容
@@ -174,6 +191,8 @@
   const addAttributeClick = () => {
     addAttributeParams.attrValueList.push({
       valueName: '',
+      // true -> 编辑状态 || false -> 只读状态
+      stateFlag: true,
     })
   }
   // 保存属性值按钮 -> @click : 保存新添加的属性值数据
@@ -203,6 +222,43 @@
   // 返回按钮 -> @click ： 返回到属性展示页面
   const cancelAttributeShowCard = () => {
     isAddAttribute.value = false
+  }
+
+  /** 属性值界面交互集合 */
+  // input -> @blur ： 将当前编辑状态设置为只读状态
+  const changeState = (
+    row: IAttributeValueParams,
+    flag: boolean,
+    $index: number,
+  ) => {
+    if (!flag) {
+      // 编辑状态 -> 只读状态
+      // 非法情况： 输入值为空时
+      if (row.valueName.trim() === '') {
+        addAttributeParams.attrValueList.splice($index, 1)
+        ElMessage({
+          type: 'error',
+          message: '输入的属性值内容不能为空！',
+        })
+        return
+      }
+      // 非法情况： 属性值不能相同
+      let repeat = addAttributeParams.attrValueList.find((item) => {
+        if (item != row) {
+          return item.valueName === row.valueName
+        }
+      })
+      if (repeat) {
+        // 删除重复的属性值
+        addAttributeParams.attrValueList.splice($index, 1)
+        ElMessage({
+          type: 'error',
+          message: '属性值不能相同！',
+        })
+        return
+      }
+    }
+    row.stateFlag = flag
   }
 
   /** 数据请求方法合集 */

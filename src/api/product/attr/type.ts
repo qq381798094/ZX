@@ -42,6 +42,7 @@ export interface IAttributeValueParams {
   id?: number
   attrId?: number
   valueName: string
+  stateFlag?: boolean
 }
 
 export interface IAttributeParams {
