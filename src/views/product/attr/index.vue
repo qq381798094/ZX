@@ -44,9 +44,14 @@
           <el-table-column label="操作" align="center" width="160px">
             <template #="{ row }">
               <!-- 编辑 -->
-              <el-button type="warning" :icon="Edit" size="small" />
+              <el-button
+                @click="handleEditAttribute(row)"
+                :icon="Edit"
+                type="warning"
+                size="small"
+              />
               <!-- 删除 -->
-              <el-button type="danger" :icon="Delete" size="small" />
+              <el-button :icon="Delete" type="danger" size="small" />
             </template>
           </el-table-column>
         </el-table>
@@ -175,7 +180,7 @@
   )
 
   /** 添加平台属性操作相关 */
-  // 控制显示的页面
+  // 控制显示的页面： false ： 展示属性与属性值页面 || true ： 添加或修改属性与属性值页面
   const isAddAttribute = ref<boolean>(false)
   // 添加平台属性按钮 -> @click ： 设置显示的 card 内容为添加属性值内容
   const handleAddAttribute = () => {
@@ -188,6 +193,13 @@
     })
     // 场景切换
     isAddAttribute.value = true
+  }
+  // 修改属性 && 属性值按钮 -> @click ： 修改当前属性的属性值
+  const handleEditAttribute = (row: IAttributeValueParams) => {
+    // 切换场景
+    isAddAttribute.value = true
+    // 将当前的 item 的属性与属性值赋值到参数数据中【深拷贝】
+    Object.assign(addAttributeParams, JSON.parse(JSON.stringify(row)))
   }
 
   /** 添加属性值页面相关数据 && 方法 */
