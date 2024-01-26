@@ -51,7 +51,17 @@
                 size="small"
               />
               <!-- 删除 -->
-              <el-button :icon="Delete" type="danger" size="small" />
+              <el-popconfirm
+                :title="`您确定要删除${row.attrName}吗？`"
+                width="240"
+                :icon="DeleteFilled"
+                icon-color="#F56C6C"
+                @confirm="handleDeleteAttribute(row.id)"
+              >
+                <template #reference>
+                  <el-button :icon="Delete" type="danger" size="small" />
+                </template>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -143,14 +153,15 @@
 
 <script setup lang="ts">
   /** API 引入 */
-  import { ref, watch, reactive, nextTick } from 'vue'
+  import { ref, watch, reactive, nextTick, onBeforeUnmount } from 'vue'
   /** EL 组件引入 */
-  import { Plus, Edit, Delete } from '@element-plus/icons-vue'
+  import { Plus, Edit, Delete, DeleteFilled } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   /** 接口引入 */
   import {
     requestGetAttrInfoByCategoryIdData,
     requestPostAddOrUpdateAttrData,
+    requestDeleteAttributeByIdData,
   } from '@/api/product/attr'
   /** 接口类型引入 */
   import type {
@@ -159,12 +170,19 @@
     IAttributeParams,
     TAddOrUpdateAttributeResponseData,
     IAttributeValueParams,
+    TDeleteAttributeResponseData,
   } from '@/api/product/attr/type'
   /** 仓库引入 */
   import useCategoryStore from '@/store/modules/category'
 
   /** 仓库实例化 */
   let categoryStore = useCategoryStore()
+
+  /** 路由组件销毁时执行的周期函数 */
+  onBeforeUnmount(() => {
+    // 清空 category 仓库数据
+    categoryStore.$reset()
+  })
 
   /** 该 watch 监听仓库中的 category3Id */
   watch(
@@ -200,6 +218,25 @@
     isAddAttribute.value = true
     // 将当前的 item 的属性与属性值赋值到参数数据中【深拷贝】
     Object.assign(addAttributeParams, JSON.parse(JSON.stringify(row)))
+  }
+  // 删除属性【气泡确认框】 -> @click : 删除当前的属性以及属性值
+  const handleDeleteAttribute = async (id: number) => {
+    try {
+      await deleteAttributeListById(id)
+      // 成功则弹出提示框
+      ElMessage({
+        type: 'success',
+        message: '删除成功',
+      })
+      // 重新加载一次数据
+      fetchAttributeListData()
+    } catch (e) {
+      // 失败则弹出提示框
+      ElMessage({
+        type: 'error',
+        message: '删除失败',
+      })
+    }
   }
 
   /** 添加属性值页面相关数据 && 方法 */
@@ -324,6 +361,16 @@
   const addOrUpdateAttributeValueData = async () => {
     const result: TAddOrUpdateAttributeResponseData =
       await requestPostAddOrUpdateAttrData(addAttributeParams)
+    if (result.code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error(result.message))
+    }
+  }
+  // 删除属性数据
+  const deleteAttributeListById = async (attrId: number) => {
+    const result: TDeleteAttributeResponseData =
+      await requestDeleteAttributeByIdData(attrId)
     if (result.code === 200) {
       return 'ok'
     } else {

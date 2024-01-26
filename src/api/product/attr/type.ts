@@ -55,3 +55,6 @@ export interface IAttributeParams {
 
 // 添加或修改属性值： 接口返回的结果类型约束
 export type TAddOrUpdateAttributeResponseData = IResponseData<string | null>
+
+// 删除属性： 接口返回的结果类型约束
+export type TDeleteAttributeResponseData = IResponseData<string | null>

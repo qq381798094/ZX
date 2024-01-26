@@ -7,6 +7,7 @@ import {
   TAttrResponseData,
   IAttributeParams,
   TAddOrUpdateAttributeResponseData,
+  TDeleteAttributeResponseData,
 } from './type'
 
 /** 接口地址枚举 */
@@ -21,6 +22,8 @@ enum API {
   GET_ATTR_INFO_BY_CATEGORY_ID_URL = '/admin/product/attrInfoList/',
   // 添加 or 修改已有的属性值
   ADD_UPDATE_ATTRIBUTE_INFO_URL = '/admin/product/saveAttrInfo',
+  // 删除已有属性
+  DELETE_ATTRIBUTE_BY_ID_URL = '/admin/product/deleteAttr/',
 }
 
 // 获取一级分类数据接口
@@ -55,4 +58,10 @@ export const requestPostAddOrUpdateAttrData = (data: IAttributeParams) =>
   request.post<any, TAddOrUpdateAttributeResponseData>(
     API.ADD_UPDATE_ATTRIBUTE_INFO_URL,
     data,
+  )
+
+// 删除已有属性
+export const requestDeleteAttributeByIdData = (attrId: number) =>
+  request.delete<any, TDeleteAttributeResponseData>(
+    API.DELETE_ATTRIBUTE_BY_ID_URL + attrId,
   )
