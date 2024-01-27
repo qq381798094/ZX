@@ -61,7 +61,7 @@
         v-model:current-page="pageNo"
         v-model:page-size="pageSize"
         @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        @current-change="fetchSpuListDataByPage"
         :page-sizes="[3, 5, 7, 9]"
         background
         layout="prev, pager, next, jumper, -> ,sizes, total"
@@ -111,13 +111,19 @@
   const pageNo = ref<number>(1) // 分页器默认页码
   const pageSize = ref<number>(3) // 每页展示多少张数据
   const totalData = ref<number>(50) // 数据总量
+  // @size-change -> pageSize 改变时触发
+  const handleSizeChange = () => {
+    fetchSpuListDataByPage()
+  }
 
   /**======添加 SPU 数据的页面平台====== */
 
   /**======数据请求方法合集====== */
   // 获取 SPU 的数据
   const spuList = ref<IRecordsItem[]>([])
-  const fetchSpuListDataByPage = async () => {
+  const fetchSpuListDataByPage = async (pager = 1) => {
+    // 给页面赋默认值
+    pageNo.value = pager
     const result: TGetSpuResponseData = await requestSpuDataByPage(
       pageNo.value,
       pageSize.value,
@@ -125,6 +131,10 @@
     )
     if (result.code === 200) {
       spuList.value = result.data.records
+      totalData.value = result.data.total
+      return 'ok'
+    } else {
+      return Promise.reject(new Error(result.message))
     }
   }
 </script>
