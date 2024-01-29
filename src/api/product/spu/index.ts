@@ -8,6 +8,8 @@ import type {
   TSpuImagesResponseData,
   TSpuSaleAttributesResponseData,
   TAllSaleAttributesResponseData,
+  TAddOrUpdateSpuResponseData,
+  IAddOrUpdateParams,
 } from './type'
 
 /** 接口地址枚举 */
@@ -22,6 +24,10 @@ enum API {
   GET_SPU_SALE_ATTRIBUTES_BY_ID__URL = '/admin/product/spuSaleAttrList/',
   // 获取整个项目全部的销售属性属性[颜色、版本、尺码]
   GET_ALL_SALE_ATTRIBUTES__URL = '/admin/product/baseSaleAttrList',
+  // 添加一个新的 SPU 数据
+  POST_ADD_NEW_SPU_DATA__URL = '/admin/product/saveSpuInfo',
+  // 更新当前的 SPU 数据
+  POST_UPDATE_SPU_DATA__URL = '/admin/product/updateSpuInfo',
 }
 
 // 根据页码和当前页数据获取 SPU 数据
@@ -57,6 +63,19 @@ export const requestAllSaleAttributeAPI = () =>
     API.GET_ALL_SALE_ATTRIBUTES__URL,
   )
 
-/**
- * PS: 下次写代码的时候记得 commit 为 获取已有 SPU 数据以及定义了相关的 TS 类型！
- */
+// 添加（新的） && 更新（一个）SPU 数据
+export const requestAddOrUpdateSpuDataAPI = (data: IAddOrUpdateParams) => {
+  if (data.id) {
+    // 修改/更新 SPU 数据
+    return request.post<any, TAddOrUpdateSpuResponseData>(
+      API.POST_UPDATE_SPU_DATA__URL,
+      data,
+    )
+  } else {
+    // 添加 SPU 数据
+    return request.post<any, TAddOrUpdateSpuResponseData>(
+      API.POST_ADD_NEW_SPU_DATA__URL,
+      data,
+    )
+  }
+}

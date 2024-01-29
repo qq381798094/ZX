@@ -3,17 +3,26 @@
     <el-form label-width="100">
       <!-- SPU 名称 -->
       <el-form-item label="SPU 名称">
-        <el-input placeholder="请输入 SPU 名称" />
+        <el-input v-model="spuParams.spuName" placeholder="请输入 SPU 名称" />
       </el-form-item>
       <!-- SPU 品牌 -->
       <el-form-item label="SPU 品牌">
-        <el-select>
-          <el-option label="测试数据" value="test" />
+        <el-select v-model="spuParams.tmId">
+          <el-option
+            v-for="brand in allBrandList"
+            :key="brand.id"
+            :label="brand.tmName"
+            :value="brand.id"
+          />
         </el-select>
       </el-form-item>
       <!-- SPU 描述 -->
       <el-form-item label="SPU 描述">
-        <el-input type="textarea" placeholder="请输入 SPU 的描述" />
+        <el-input
+          v-model="spuParams.description"
+          type="textarea"
+          placeholder="请输入 SPU 的描述"
+        />
       </el-form-item>
       <!-- SPU 照片 -->
       <el-form-item label="SPU 照片">
@@ -77,7 +86,6 @@
   } from '@/api/product/spu'
   /** 接口类型引入 */
   import type {
-    IRecordsItem,
     IAllBrandItem,
     ISpuImageItem,
     ISpuSaleAttributeItem,
@@ -86,6 +94,7 @@
     TSpuImagesResponseData,
     TSpuSaleAttributesResponseData,
     TAllSaleAttributesResponseData,
+    IAddOrUpdateParams,
   } from '@/api/product/spu/type'
 
   // 自定义事件
@@ -103,8 +112,19 @@
   const allAttributesList = ref<IAllSaleAttributeItem[]>([]) // 存放全部的销售属性
 
   /** 需要暴露给父组件的方法 */
-  const initData = async (item: IRecordsItem) => {
+  // 存储已有的 SPU 对象【父组件传过来的】
+  const spuParams = ref<IAddOrUpdateParams>({
+    category3Id: undefined,
+    spuName: '',
+    description: '',
+    tmId: undefined,
+    spuImageList: [],
+    spuSaleAttrList: [],
+  })
+  const initData = async (item: IAddOrUpdateParams) => {
     try {
+      // 将父组件传过来的 spu 数据先存储并展示
+      spuParams.value = item
       // 获取全部品牌数据
       allBrandList.value = await fetchAllBrandData()
       // 获取某一个 SPU 下全部的售卖商品图片数据
