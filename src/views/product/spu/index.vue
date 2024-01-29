@@ -10,7 +10,7 @@
           type="primary"
           :icon="Plus"
           :disabled="categoryStore.thirdCategoryId ? false : true"
-          @click="changeScene"
+          @click="changeScene(false)"
         >
           添加 SPU
         </el-button>
@@ -47,7 +47,7 @@
                 type="warning"
                 :icon="Edit"
                 title="修改 SPU"
-                @click="changeScene"
+                @click="changeScene(true, row)"
               />
               <el-button
                 size="small"
@@ -79,7 +79,7 @@
     </div>
     <!-- 添加 || 修改 SPU 数据平台卡片【组件】 -->
     <div v-show="changeSpuScene === 1">
-      <SpuForm @scene="spuReturnScene" />
+      <SpuForm ref="spuRef" @scene="spuReturnScene" />
     </div>
     <!-- 添加 SKU 数据平台卡片【组件】 -->
     <div v-show="changeSpuScene === 2">
@@ -97,7 +97,7 @@
   /** EL 组件引入 */
   import { Plus, Edit, InfoFilled, Delete } from '@element-plus/icons-vue'
   /** 接口引入 */
-  import { requestSpuDataByPage } from '@/api/product/spu'
+  import { requestSpuDataByPageAPI } from '@/api/product/spu'
   /** 接口类型约束引入 */
   import type {
     TGetSpuResponseData,
@@ -143,8 +143,15 @@
   }
 
   /**======添加 SPU 数据的页面平台====== */
+  const spuRef = ref() // spuForm 子组件实例
   // button -> @click 事件 ： 添加 || 编辑 SPU 数据
-  const changeScene = () => {
+  const changeScene = (flag: boolean, item?: IRecordsItem) => {
+    if (flag) {
+      // 编辑状态
+      spuRef.value.initData(item)
+    } else {
+      // 新增状态
+    }
     // 切换场景
     changeSpuScene.value = 1
   }
@@ -157,7 +164,7 @@
   const fetchSpuListDataByPage = async (pager = 1) => {
     // 给页面赋默认值
     pageNo.value = pager
-    const result: TGetSpuResponseData = await requestSpuDataByPage(
+    const result: TGetSpuResponseData = await requestSpuDataByPageAPI(
       pageNo.value,
       pageSize.value,
       categoryStore.thirdCategoryId,

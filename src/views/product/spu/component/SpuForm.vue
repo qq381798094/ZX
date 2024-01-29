@@ -64,8 +64,29 @@
 </template>
 
 <script setup lang="ts">
+  /** API */
+  import { ref } from 'vue'
   /** EL 组件引入 */
   import { Plus, Delete } from '@element-plus/icons-vue'
+  /** 接口引入 */
+  import {
+    requestAllBrandDataAPI,
+    requestSpuImgsByIdAPI,
+    requestSpuSaleAttributesByIdAPI,
+    requestAllSaleAttributeAPI,
+  } from '@/api/product/spu'
+  /** 接口类型引入 */
+  import type {
+    IRecordsItem,
+    IAllBrandItem,
+    ISpuImageItem,
+    ISpuSaleAttributeItem,
+    IAllSaleAttributeItem,
+    TAllBrandResponseData,
+    TSpuImagesResponseData,
+    TSpuSaleAttributesResponseData,
+    TAllSaleAttributesResponseData,
+  } from '@/api/product/spu/type'
 
   // 自定义事件
   const emits = defineEmits(['scene'])
@@ -74,6 +95,76 @@
   // 取消 button -> @click : 往父组件传一个事件
   const cancelForm = () => {
     emits('scene')
+  }
+  /** 此处集中存放 ： 获取当前组件所请求的初始化数据【数组】 */
+  const allBrandList = ref<IAllBrandItem[]>([]) // 存放当前全部品牌数据
+  const allSaleGoodsImgsList = ref<ISpuImageItem[]>([]) // 存放当前 SPU 的图片集
+  const allSaleAttributesList = ref<ISpuSaleAttributeItem[]>([]) // 存放当前 SPU 的销售属性
+  const allAttributesList = ref<IAllSaleAttributeItem[]>([]) // 存放全部的销售属性
+
+  /** 需要暴露给父组件的方法 */
+  const initData = async (item: IRecordsItem) => {
+    try {
+      // 获取全部品牌数据
+      allBrandList.value = await fetchAllBrandData()
+      // 获取某一个 SPU 下全部的售卖商品图片数据
+      allSaleGoodsImgsList.value = await fetchAllSaleGoodsImgsDataById(
+        item.id as number,
+      )
+      // 获取某一个 SPU 下全部的销售属性数据
+      allSaleAttributesList.value = await fetchAllSaleAttrDataById(
+        item.id as number,
+      )
+      // 获取整个项目全部的销售属性属性[颜色、版本、尺码]
+      allAttributesList.value = await fetchAllAttrData()
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  // 对父组件暴露的数据 && 事件
+  defineExpose({
+    initData,
+  })
+
+  /** 数据请求的方法归类 */
+  // 获取全部品牌数据
+  const fetchAllBrandData = async () => {
+    const result: TAllBrandResponseData = await requestAllBrandDataAPI()
+    if (result.code === 200) {
+      return result.data
+    } else {
+      return Promise.reject(new Error('获取品牌数据失败！'))
+    }
+  }
+  // 获取某一个 SPU 下全部的售卖商品图片数据
+  const fetchAllSaleGoodsImgsDataById = async (id: number) => {
+    const result: TSpuImagesResponseData = await requestSpuImgsByIdAPI(id)
+    if (result.code === 200) {
+      return result.data
+    } else {
+      return Promise.reject(new Error('获取商品图片失败！'))
+    }
+  }
+  // 获取某一个 SPU 下全部的销售属性数据
+  const fetchAllSaleAttrDataById = async (id: number) => {
+    const result: TSpuSaleAttributesResponseData =
+      await requestSpuSaleAttributesByIdAPI(id)
+    if (result.code === 200) {
+      return result.data
+    } else {
+      return Promise.reject(new Error('获取销售属性失败！'))
+    }
+  }
+  // 获取整个项目全部的销售属性属性[颜色、版本、尺码]
+  const fetchAllAttrData = async () => {
+    const result: TAllSaleAttributesResponseData =
+      await requestAllSaleAttributeAPI()
+    if (result.code === 200) {
+      return result.data
+    } else {
+      return Promise.reject(new Error('获取所有销售属性数据失败！'))
+    }
   }
 </script>
 
