@@ -35,11 +35,29 @@
       <!-- SPU 销售属性 -->
       <el-form-item label="SPU 销售属性">
         <!-- 展示销售属性的下拉菜单 -->
-        <el-select>
-          <el-option label="测试数据" value="test" />
+        <el-select
+          v-model="selectedAttribute"
+          :placeholder="
+            unSelectedAttribute.length ? `还有${unSelectedAttribute.length}个属性未选择` : '无'
+          "
+        >
+          <el-option
+            v-for="item in unSelectedAttribute"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
         </el-select>
         <!-- 添加销售属性按钮 -->
-        <el-button class="add-sale-button" type="primary" :icon="Plus">添加销售属性</el-button>
+        <el-button
+          @click="handleAddAttribute"
+          :disabled="selectedAttribute ? false : true"
+          class="add-sale-button"
+          type="primary"
+          :icon="Plus"
+        >
+          添加销售属性
+        </el-button>
         <!-- 展示销售属性和属性值【表格】 -->
         <el-table class="table-box" :data="allSaleAttributesList" border>
           <el-table-column label="序号" type="index" width="100" align="center" />
@@ -86,7 +104,7 @@
 
 <script setup lang="ts">
   /** API */
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   /** EL 组件引入 */
   import { Plus, Delete } from '@element-plus/icons-vue'
   import { type UploadProps, ElMessage } from 'element-plus'
@@ -150,6 +168,29 @@
   }
 
   /** SPU 销售属性相关 */
+  // 计算出当前 SPU 剩余未赋值的销售属性
+  const unSelectedAttribute = computed(() =>
+    allAttributesList.value.filter((all) =>
+      allSaleAttributesList.value.every((item) => all.name != item.saleAttrName),
+    ),
+  )
+  // 绑定销售属性 select 数据
+  const selectedAttribute = ref<number | undefined>(undefined)
+  // 添加销售属性按钮 @click
+  const handleAddAttribute = () => {
+    // 根据传过来的 id 值去拿到数组里当前的属性数据
+    let { id, name } = allAttributesList.value.find(
+      (item) => item.id === selectedAttribute.value,
+    ) as IAllSaleAttributeItem
+    // 追加数组
+    allSaleAttributesList.value.push({
+      baseSaleAttrId: id,
+      saleAttrName: name,
+      spuSaleAttrValueList: [],
+    })
+    // 清空 select 值
+    selectedAttribute.value = undefined
+  }
   // tag 删除钩子
   const handleRemoveTag = (index: number, $index: number) => {
     allSaleAttributesList.value[$index].spuSaleAttrValueList.splice(index, 1)
