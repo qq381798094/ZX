@@ -52,8 +52,10 @@ export type TAllBrandResponseData = ISpuResponseData<IAllBrandItem[]>
 
 export interface ISpuImageItem {
   id?: number
-  imgName: string
-  imgUrl: string
+  imgName?: string
+  imgUrl?: string
+  name?: string
+  url?: string
   createTime?: string
   updateTime?: string
   spuId?: number
@@ -84,9 +86,7 @@ export interface ISpuSaleAttributeItem {
 }
 
 // 获取某一个 SPU 下全部的销售属性数据部分 返回数据的类型约束
-export type TSpuSaleAttributesResponseData = ISpuResponseData<
-  ISpuSaleAttributeItem[]
->
+export type TSpuSaleAttributesResponseData = ISpuResponseData<ISpuSaleAttributeItem[]>
 
 /** 获取整个项目全部的销售属性属性[颜色、版本、尺码] */
 export interface IAllSaleAttributeItem {
@@ -97,9 +97,7 @@ export interface IAllSaleAttributeItem {
 }
 
 // 获取整个项目全部的销售属性属性[颜色、版本、尺码] 返回数据的类型约束
-export type TAllSaleAttributesResponseData = ISpuResponseData<
-  IAllSaleAttributeItem[]
->
+export type TAllSaleAttributesResponseData = ISpuResponseData<IAllSaleAttributeItem[]>
 
 /** 添加 && 修改 SPU 数据 ： 所需参数的类型约束 */
 // 图片数组

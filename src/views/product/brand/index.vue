@@ -2,12 +2,7 @@
   <div>
     <el-card class="box-card">
       <!-- 顶部添加品牌按钮 -->
-      <el-button
-        type="primary"
-        size="default"
-        :icon="Plus"
-        @click="openChangeOrCreateBrand({})"
-      >
+      <el-button type="primary" size="default" :icon="Plus" @click="openChangeOrCreateBrand({})">
         添加品牌
       </el-button>
       <!-- 表格：展示已有品牌数据 -->
@@ -61,12 +56,7 @@
     <!-- 添加 && 修改品牌数据时弹出该对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle">
       <!-- 中间内容区域 -->
-      <el-form
-        style="width: 80%"
-        ref="brandFormRef"
-        :model="brandParams"
-        :rules="rules"
-      >
+      <el-form style="width: 80%" ref="brandFormRef" :model="brandParams" :rules="rules">
         <el-form-item label="品牌名称" prop="tmName" label-width="100px">
           <el-input v-model="brandParams.tmName" placeholder="请输入品牌名称" />
         </el-form-item>
@@ -78,11 +68,7 @@
             :on-success="handleBrandImgSuccess"
             :before-upload="beforeBrandImgUpload"
           >
-            <img
-              v-if="brandParams.logoUrl"
-              :src="brandParams.logoUrl"
-              class="avatar"
-            />
+            <img v-if="brandParams.logoUrl" :src="brandParams.logoUrl" class="avatar" />
             <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
           </el-upload>
         </el-form-item>
@@ -204,9 +190,7 @@
     } catch (error) {
       ElMessage({
         type: 'error',
-        message: brandParams.id
-          ? '修改品牌时出错，请稍后再试'
-          : '当前添加品牌失败，请重新尝试',
+        message: brandParams.id ? '修改品牌时出错，请稍后再试' : '当前添加品牌失败，请重新尝试',
       })
     }
   }
@@ -289,11 +273,10 @@
   // 请求已有的品牌数据【需要 page && limit 】
   const brandList = ref<TRecordsItem[]>([]) // 存储列表数据
   const getHasBrandData = async () => {
-    const result: IGetBrandResponseByPageData =
-      await requestGetHasBrandByPageAPI({
-        page: pageNo.value,
-        limit: pageLimit.value,
-      })
+    const result: IGetBrandResponseByPageData = await requestGetHasBrandByPageAPI({
+      page: pageNo.value,
+      limit: pageLimit.value,
+    })
     if (result.code === 200) {
       // 存储数据
       brandList.value = result.data.records

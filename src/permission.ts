@@ -12,6 +12,7 @@ import setting from './setting'
 /** 获取仓库 */
 import useUserStore from '@/store/modules/user'
 import pinia from '@/store'
+
 const userStore = useUserStore(pinia)
 
 // 全局前置守卫
@@ -63,9 +64,7 @@ router.beforeEach(async (to, from, next) => {
 // 全局后置守卫
 router.afterEach((to, from, next) => {
   // eslint-disable-next-line no-constant-condition
-  document.title = 'undefined'
-    ? `${setting.title}`
-    : `${setting.title} - ${from.meta.title}`
+  document.title = 'undefined' ? `${setting.title}` : `${setting.title} - ${from.meta.title}`
   // 关闭进度条
   NProgress.done()
 })

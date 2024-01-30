@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia'
 /** 导入接口 */
-import {
-  requestLoginAPI,
-  requestUserInfoAPI,
-  requestLoginOutAPI,
-} from '@/api/user'
+import { requestLoginAPI, requestUserInfoAPI, requestLoginOutAPI } from '@/api/user'
 /** 导入类型 */
 import type { IUserState } from '@/store/modules/types/userType.ts'
 import {

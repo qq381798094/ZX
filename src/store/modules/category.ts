@@ -10,10 +10,7 @@ import {
 
 /** 类型引入 */
 import type { ICategoryState } from './types/categoryType'
-import type {
-  TCategoryResponseData,
-  ICategoryData,
-} from '@/api/product/attr/type'
+import type { TCategoryResponseData, ICategoryData } from '@/api/product/attr/type'
 
 export default defineStore('Category', {
   state: (): ICategoryState => {
@@ -56,8 +53,9 @@ export default defineStore('Category', {
     },
     /** 获取二级分类数据列表 */
     async getSecondCategoryList() {
-      const result: TCategoryResponseData =
-        await requestSecondCategoryByFirstIdData(this.firstCategoryId as number)
+      const result: TCategoryResponseData = await requestSecondCategoryByFirstIdData(
+        this.firstCategoryId as number,
+      )
       if (result.code === 200) {
         this.secondCategoryList = result.data.map((item: ICategoryData) => {
           return {
@@ -70,10 +68,9 @@ export default defineStore('Category', {
     },
     /** 获取三级分类数据列表 */
     async getThirdCategoryList() {
-      const result: TCategoryResponseData =
-        await requestThirdCategoryBySecondIdData(
-          this.secondCategoryId as number,
-        )
+      const result: TCategoryResponseData = await requestThirdCategoryBySecondIdData(
+        this.secondCategoryId as number,
+      )
       if (result.code === 200) {
         this.thirdCategoryList = result.data.map((item: ICategoryData) => {
           return {

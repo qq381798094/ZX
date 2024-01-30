@@ -3,12 +3,7 @@
     <el-row>
       <el-col :span="14" :xs="0"></el-col>
       <el-col :span="10" :xs="24">
-        <el-form
-          class="login-form"
-          :model="loginForm"
-          :rules="rules"
-          :ref="loginFormRefs"
-        >
+        <el-form class="login-form" :model="loginForm" :rules="rules" :ref="loginFormRefs">
           <h1>Hello</h1>
           <h2>欢迎来到甄选</h2>
           <el-form-item prop="username">

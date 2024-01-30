@@ -30,10 +30,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="三级分类">
-        <el-select
-          :disabled="props.disabled"
-          v-model="categoryStore.thirdCategoryId"
-        >
+        <el-select :disabled="props.disabled" v-model="categoryStore.thirdCategoryId">
           <el-option
             v-for="item in categoryStore.thirdCategoryList"
             :key="item.value"

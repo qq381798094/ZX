@@ -1,18 +1,6 @@
 <template>
-  <el-button
-    type="primary"
-    size="small"
-    :icon="Refresh"
-    circle
-    @click="refreshClick"
-  ></el-button>
-  <el-button
-    type="primary"
-    size="small"
-    :icon="FullScreen"
-    circle
-    @click="fullScreen"
-  ></el-button>
+  <el-button type="primary" size="small" :icon="Refresh" circle @click="refreshClick"></el-button>
+  <el-button type="primary" size="small" :icon="FullScreen" circle @click="fullScreen"></el-button>
   <el-button type="primary" size="small" :icon="Setting" circle></el-button>
   <!-- 用户信息 -->
   <img

@@ -21,9 +21,7 @@ export const requestLoginAPI = (data: ILoginParams) =>
   request.post<any, ILoginResponseData>(API.LOGIN_URL, data)
 
 // 获取用户信息接口方法
-export const requestUserInfoAPI = () =>
-  request.get<any, IUserInfoResponseData>(API.USERINFO_URL)
+export const requestUserInfoAPI = () => request.get<any, IUserInfoResponseData>(API.USERINFO_URL)
 
 // 用户退出登录接口方法
-export const requestLoginOutAPI = () =>
-  request.post<any, ILoginOutResponseData>(API.LOGIN_OUT_URL)
+export const requestLoginOutAPI = () => request.post<any, ILoginOutResponseData>(API.LOGIN_OUT_URL)

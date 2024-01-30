@@ -14,9 +14,7 @@
     <!-- 有子路由且只有一个子路由的情况 -->
     <template
       v-if="
-        item.children &&
-        item.children?.length === 1 &&
-        !(item.children[0].meta as RouteMeta).hidden
+        item.children && item.children?.length === 1 && !(item.children[0].meta as RouteMeta).hidden
       "
     >
       <el-menu-item :index="item.children[0].path">

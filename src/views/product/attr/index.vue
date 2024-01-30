@@ -17,26 +17,12 @@
         </el-button>
         <!-- 表格 -->
         <el-table :data="attributeList" border stripe class="table-box">
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            width="100px"
-          />
-          <el-table-column
-            label="属性名称"
-            align="center"
-            prop="attrName"
-            width="140px"
-          />
+          <el-table-column label="序号" align="center" type="index" width="100px" />
+          <el-table-column label="属性名称" align="center" prop="attrName" width="140px" />
           <el-table-column label="属性值名称">
             <template #="{ row, $index }">
               <!-- 属性值 -->
-              <el-tag
-                class="tag-box"
-                v-for="tag in row.attrValueList"
-                :key="tag.id"
-              >
+              <el-tag class="tag-box" v-for="tag in row.attrValueList" :key="tag.id">
                 {{ tag.valueName }}
               </el-tag>
             </template>
@@ -73,10 +59,7 @@
         <!-- form表单 -->
         <el-form inline>
           <el-form-item label="属性名称">
-            <el-input
-              v-model="addAttributeParams.attrName"
-              placeholder="请输入属性名称"
-            />
+            <el-input v-model="addAttributeParams.attrName" placeholder="请输入属性名称" />
           </el-form-item>
         </el-form>
 
@@ -92,17 +75,8 @@
         <el-button @click="cancelAttributeShowCard">取消</el-button>
 
         <!-- table 表格 -->
-        <el-table
-          :data="addAttributeParams.attrValueList"
-          border
-          class="table-box"
-        >
-          <el-table-column
-            label="序号"
-            width="100px"
-            type="index"
-            align="center"
-          />
+        <el-table :data="addAttributeParams.attrValueList" border class="table-box">
+          <el-table-column label="序号" width="100px" type="index" align="center" />
           <el-table-column label="属性值名称">
             <template #="{ row, $index }">
               <!-- :ref -> 存储 input 的实例到 inputRefArr  -->
@@ -277,9 +251,7 @@
       // 弹出错误提示
       ElMessage({
         type: 'error',
-        message: addAttributeParams.id
-          ? '修改属性值有误，请重试'
-          : '添加属性值有误，请重试',
+        message: addAttributeParams.id ? '修改属性值有误，请重试' : '添加属性值有误，请重试',
       })
     }
   }
@@ -290,11 +262,7 @@
 
   /** 属性值界面交互集合 */
   // input -> @blur ： 将当前编辑状态设置为只读状态
-  const changeState = (
-    row: IAttributeValueParams,
-    flag: boolean,
-    $index: number,
-  ) => {
+  const changeState = (row: IAttributeValueParams, flag: boolean, $index: number) => {
     // 编辑状态 -> 只读状态
     if (!flag) {
       // 非法情况： 输入值为空时
@@ -369,8 +337,7 @@
   }
   // 删除属性数据
   const deleteAttributeListById = async (attrId: number) => {
-    const result: TDeleteAttributeResponseData =
-      await requestDeleteAttributeByIdData(attrId)
+    const result: TDeleteAttributeResponseData = await requestDeleteAttributeByIdData(attrId)
     if (result.code === 200) {
       return 'ok'
     } else {

@@ -2,11 +2,7 @@
 import request from '@/utils/request'
 
 /** 类型约束 */
-import {
-  TGetBrandParams,
-  IGetBrandResponseByPageData,
-  TAddOrUpdateBrandParams,
-} from './type'
+import { TGetBrandParams, IGetBrandResponseByPageData, TAddOrUpdateBrandParams } from './type'
 
 /** 接口地址枚举 */
 enum API {

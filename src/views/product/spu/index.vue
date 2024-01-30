@@ -16,12 +16,7 @@
         </el-button>
         <!-- 表格结构 -->
         <el-table :data="spuList" class="table-box" border>
-          <el-table-column
-            label="序号"
-            width="100"
-            type="index"
-            align="center"
-          />
+          <el-table-column label="序号" width="100" type="index" align="center" />
           <el-table-column
             show-overflow-tooltip
             label="SPU 名称"
@@ -29,19 +24,10 @@
             width="200"
             align="center"
           />
-          <el-table-column
-            label="SPU 描述"
-            show-overflow-tooltip
-            prop="description"
-          />
+          <el-table-column label="SPU 描述" show-overflow-tooltip prop="description" />
           <el-table-column label="操作" width="220" align="center">
             <template #="{ row, $index }">
-              <el-button
-                size="small"
-                type="primary"
-                :icon="Plus"
-                title="添加 SPU"
-              />
+              <el-button size="small" type="primary" :icon="Plus" title="添加 SPU" />
               <el-button
                 size="small"
                 type="warning"
@@ -49,18 +35,8 @@
                 title="修改 SPU"
                 @click="changeScene(true, row)"
               />
-              <el-button
-                size="small"
-                type="info"
-                :icon="InfoFilled"
-                title="查看 SPU 列表"
-              />
-              <el-button
-                size="small"
-                type="danger"
-                :icon="Delete"
-                title="删除当前 SPU"
-              />
+              <el-button size="small" type="info" :icon="InfoFilled" title="查看 SPU 列表" />
+              <el-button size="small" type="danger" :icon="Delete" title="删除当前 SPU" />
             </template>
           </el-table-column>
         </el-table>
@@ -99,10 +75,7 @@
   /** 接口引入 */
   import { requestSpuDataByPageAPI } from '@/api/product/spu'
   /** 接口类型约束引入 */
-  import type {
-    TGetSpuResponseData,
-    IRecordsItem,
-  } from '@/api/product/spu/type'
+  import type { TGetSpuResponseData, IRecordsItem } from '@/api/product/spu/type'
   /** 仓库引入 */
   import useCategoryStore from '@/store/modules/category'
 
@@ -125,7 +98,10 @@
   /** 场景切换变量聚集地 */
   // 控制添加 || 展示 SPU 页面平台的切换 👇
   // 0 ： 展示 SPU 数据页面 || 1 ： 添加或修改 SPU 数据页面 || 2 : 添加 SKU 数据页面
-  const changeSpuScene = ref<number>(0)
+  type TMain = 0
+  type TSpu = 1
+  type TSku = 2
+  const changeSpuScene = ref<TMain | TSpu | TSku>(0)
 
   /**======展示 SPU 数据的页面平台====== */
   /* 分页器组件部分 数据 && 方法 */

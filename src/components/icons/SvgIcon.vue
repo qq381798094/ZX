@@ -18,7 +18,7 @@
     },
     name: String,
     color: String,
-  });
+  })
 </script>
 
 <style scoped></style>

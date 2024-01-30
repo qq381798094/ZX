@@ -76,10 +76,7 @@
   const levelThirdOptions = shallowRef<OptionType[]>([])
 
   const requestOptionsList = async (
-    requestFunc:
-      | typeof props.requestFirFn
-      | typeof props.requestSecFn
-      | typeof props.requestTrdFn,
+    requestFunc: typeof props.requestFirFn | typeof props.requestSecFn | typeof props.requestTrdFn,
     resultOptions: any,
     id?: number,
   ) => {
