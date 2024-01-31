@@ -71,10 +71,24 @@
                 closable
                 @close="handleRemoveTag(index, $index)"
               >
-                {{ tag.saleAttrName }}
+                {{ tag.saleAttrValueName }}
               </el-tag>
-              <!-- 编辑模式 -->
-              <el-button type="success" size="small" :icon="Plus" />
+              <!-- 编辑模式切换 -->
+              <el-button
+                v-show="!row.flag"
+                @click="handleChangeModel(row)"
+                type="success"
+                size="small"
+                :icon="Plus"
+              />
+              <el-input
+                class="model-input"
+                v-model="row.attributeValue"
+                v-show="row.flag"
+                size="small"
+                placeholder="请输入属性值"
+                @blur="collectionAttributeValue(row)"
+              />
             </template>
           </el-table-column>
           <el-table-column label="操作" width="150" align="center">
@@ -107,7 +121,7 @@
   import { ref, computed } from 'vue'
   /** EL 组件引入 */
   import { Plus, Delete } from '@element-plus/icons-vue'
-  import { type UploadProps, ElMessage } from 'element-plus'
+  import { type UploadProps, ElMessage, ElNotification } from 'element-plus'
   /** 接口引入 */
   import {
     requestAllBrandDataAPI,
@@ -130,6 +144,16 @@
 
   // 自定义事件
   const emits = defineEmits(['scene'])
+
+  // 存储已有的 SPU 对象【父组件通过 initData() 传过来的】
+  const spuParams = ref<IAddOrUpdateParams>({
+    category3Id: undefined,
+    spuName: '',
+    description: '',
+    tmId: undefined,
+    spuImageList: [],
+    spuSaleAttrList: [],
+  })
 
   /** SPU 操作按钮数据 && 方法 */
   // 取消 button -> @click : 往父组件传一个事件
@@ -208,6 +232,60 @@
     })
   }
 
+  /** SPU 销售属性 / 属性值相关 */
+  // 添加 SPU 属性值按钮 ： @click
+  const handleChangeModel = (row: ISpuSaleAttributeItem) => {
+    // 模式切换： 只读(false) -> 编辑(true)
+    row.flag = true
+    // 设置其他行为只读
+    allSaleAttributesList.value.forEach((item) => {
+      if (item === row) {
+        return
+      }
+      item.flag = false
+    })
+  }
+  // 属性值 input 框失焦触发 ： @blur
+  const collectionAttributeValue = (item: ISpuSaleAttributeItem) => {
+    const { baseSaleAttrId, attributeValue } = item
+    // 非法情况排除
+    if (attributeValue!.trim() === '') {
+      ElMessage({
+        type: 'error',
+        message: '新属性值内容不能为空!',
+      })
+      item.attributeValue = ''
+      item.flag = false
+      return
+    }
+
+    if (
+      item.spuSaleAttrValueList.find((item) => item.saleAttrValueName === attributeValue!.trim())
+    ) {
+      ElMessage({
+        type: 'error',
+        message: '属性值不能和已有属性值名称相同!',
+      })
+      item.attributeValue = ''
+      item.flag = false
+      return
+    }
+
+    // 数组追加数据
+    item.spuSaleAttrValueList.push({
+      baseSaleAttrId,
+      saleAttrValueName: attributeValue as string,
+    })
+    item.attributeValue = ''
+    // 模式切换： 编辑 -> 只读
+    item.flag = false
+    // 提示
+    ElMessage({
+      type: 'success',
+      message: '添加属性值成功',
+    })
+  }
+
   /** 此处集中存放 ： 获取当前组件所请求的初始化数据【数组】 */
   const allBrandList = ref<IAllBrandItem[]>([]) // 存放当前全部品牌数据
   const allSaleGoodsImgsList = ref<ISpuImageItem[]>([]) // 存放当前 SPU 的图片集
@@ -215,15 +293,7 @@
   const allAttributesList = ref<IAllSaleAttributeItem[]>([]) // 存放全部的销售属性
 
   /** 需要暴露给父组件的方法 */
-  // 存储已有的 SPU 对象【父组件传过来的】
-  const spuParams = ref<IAddOrUpdateParams>({
-    category3Id: undefined,
-    spuName: '',
-    description: '',
-    tmId: undefined,
-    spuImageList: [],
-    spuSaleAttrList: [],
-  })
+  // 初始化数据【父组件调用】
   const initData = async (item: IAddOrUpdateParams) => {
     try {
       // 将父组件传过来的 spu 数据先存储并展示
@@ -237,7 +307,11 @@
       // 获取整个项目全部的销售属性属性[颜色、版本、尺码]
       allAttributesList.value = await fetchAllAttrData()
     } catch (e) {
-      console.log(e)
+      ElNotification({
+        type: 'error',
+        message: '数据获取失败！',
+        title: '提示',
+      })
     }
   }
 
@@ -310,5 +384,9 @@
   // 属性值 tag
   .tag-item {
     margin: 0 5px;
+  }
+  // 模式切换 input
+  .model-input {
+    width: 120px;
   }
 </style>

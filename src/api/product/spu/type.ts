@@ -83,6 +83,8 @@ export interface ISpuSaleAttributeItem {
   spuId?: number
   createTime?: string | null
   updateTime?: string | null
+  flag?: boolean
+  attributeValue?: string
 }
 
 // 获取某一个 SPU 下全部的销售属性数据部分 返回数据的类型约束
