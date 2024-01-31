@@ -105,7 +105,13 @@
       </el-form-item>
       <!-- SPU 操作按钮 -->
       <el-form-item>
-        <el-button type="primary">保存</el-button>
+        <el-button
+          @click="saveForm"
+          type="primary"
+          :disabled="allSaleAttributesList.length > 0 ? false : true"
+        >
+          保存
+        </el-button>
         <el-button @click="cancelForm">取消</el-button>
       </el-form-item>
     </el-form>
@@ -128,6 +134,7 @@
     requestSpuImgsByIdAPI,
     requestSpuSaleAttributesByIdAPI,
     requestAllSaleAttributeAPI,
+    requestAddOrUpdateSpuDataAPI,
   } from '@/api/product/spu'
   /** 接口类型引入 */
   import type {
@@ -140,6 +147,7 @@
     TSpuSaleAttributesResponseData,
     TAllSaleAttributesResponseData,
     IAddOrUpdateParams,
+    TAddOrUpdateSpuResponseData,
   } from '@/api/product/spu/type'
 
   // 自定义事件
@@ -156,9 +164,35 @@
   })
 
   /** SPU 操作按钮数据 && 方法 */
+  // 保存 button -> @click
+  const saveForm = async () => {
+    // 整理参数
+    spuParams.value.spuImageList = allSaleGoodsImgsList.value.map((item: any) => {
+      return {
+        imgName: item.name,
+        imgUrl: (item.response && item.response.data) || item.url,
+      }
+    })
+    spuParams.value.spuSaleAttrList = allSaleAttributesList.value
+    // 发送请求
+    try {
+      await updateSpuFormData(spuParams.value)
+      ElMessage({
+        type: 'success',
+        message: spuParams.value.id ? '修改成功' : '添加成功',
+      })
+      // 跳转
+      emits('scene', { status: spuParams.value.id ? 'update' : 'create' })
+    } catch (e) {
+      ElMessage({
+        type: 'error',
+        message: spuParams.value.id ? '更新出错' : '新增出错',
+      })
+    }
+  }
   // 取消 button -> @click : 往父组件传一个事件
   const cancelForm = () => {
-    emits('scene')
+    emits('scene', { status: '' })
   }
 
   /** 上传图片相关 */
@@ -293,7 +327,7 @@
   const allAttributesList = ref<IAllSaleAttributeItem[]>([]) // 存放全部的销售属性
 
   /** 需要暴露给父组件的方法 */
-  // 初始化数据【父组件调用】
+  // 【修改】初始化数据【父组件调用】
   const initData = async (item: IAddOrUpdateParams) => {
     try {
       // 将父组件传过来的 spu 数据先存储并展示
@@ -314,10 +348,38 @@
       })
     }
   }
+  // 【添加】初始化数据【父组件调用】
+  const initAddData = async (category3Id: number) => {
+    try {
+      // 清空整个数据
+      await Object.assign(spuParams.value, {
+        category3Id,
+        id: undefined,
+        spuName: '',
+        description: '',
+        tmId: undefined,
+        spuImageList: [],
+        spuSaleAttrList: [],
+      })
+      allSaleGoodsImgsList.value = []
+      allSaleAttributesList.value = []
+      selectedAttribute.value = undefined
+      // 获取全部品牌数据
+      allBrandList.value = await fetchAllBrandData()
+      // 获取整个项目全部的销售属性属性[颜色、版本、尺码]
+      allAttributesList.value = await fetchAllAttrData()
+    } catch (e) {
+      ElMessage({
+        type: 'error',
+        message: '数据请求失败！',
+      })
+    }
+  }
 
   // 对父组件暴露的数据 && 事件
   defineExpose({
     initData,
+    initAddData,
   })
 
   /** 数据请求的方法归类 */
@@ -360,6 +422,15 @@
       return result.data
     } else {
       return Promise.reject(new Error('获取所有销售属性数据失败！'))
+    }
+  }
+  // 添加（新的） && 更新（一个）SPU 数据
+  const updateSpuFormData = async (data: IAddOrUpdateParams) => {
+    const result: TAddOrUpdateSpuResponseData = await requestAddOrUpdateSpuDataAPI(data)
+    if (result.code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('失败'))
     }
   }
 </script>

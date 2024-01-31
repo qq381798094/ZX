@@ -114,8 +114,14 @@
   }
   /** 关于 SPU 子组件需要用到的属性值 && 回调方法 */
   // 子组件 button -> @click 回调 ： 切换回主场景
-  const spuReturnScene = () => {
+  type Status = 'create' | 'update' | ''
+  const spuReturnScene = (params: { status: Status }) => {
     changeSpuScene.value = 0
+    if (params.status == 'create') {
+      fetchSpuListDataByPage()
+    } else {
+      fetchSpuListDataByPage(pageNo.value)
+    }
   }
 
   /**======添加 SPU 数据的页面平台====== */
@@ -127,6 +133,7 @@
       spuRef.value.initData(item)
     } else {
       // 新增状态
+      spuRef.value.initAddData(categoryStore.thirdCategoryId)
     }
     // 切换场景
     changeSpuScene.value = 1
