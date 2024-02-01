@@ -27,7 +27,13 @@
           <el-table-column label="SPU 描述" show-overflow-tooltip prop="description" />
           <el-table-column label="操作" width="220" align="center">
             <template #="{ row, $index }">
-              <el-button size="small" type="primary" :icon="Plus" title="添加 SPU" />
+              <el-button
+                @click="changeSceneToSku"
+                size="small"
+                type="primary"
+                :icon="Plus"
+                title="添加 SKU"
+              />
               <el-button
                 size="small"
                 type="warning"
@@ -59,7 +65,7 @@
     </div>
     <!-- 添加 SKU 数据平台卡片【组件】 -->
     <div v-show="changeSpuScene === 2">
-      <SkuForm />
+      <SkuForm @scene="skuReturnScene" />
     </div>
   </div>
 </template>
@@ -98,10 +104,10 @@
   /** 场景切换变量聚集地 */
   // 控制添加 || 展示 SPU 页面平台的切换 👇
   // 0 ： 展示 SPU 数据页面 || 1 ： 添加或修改 SPU 数据页面 || 2 : 添加 SKU 数据页面
-  type TMain = 0
-  type TSpu = 1
-  type TSku = 2
-  const changeSpuScene = ref<TMain | TSpu | TSku>(0)
+  type Main = 0
+  type Spu = 1
+  type Sku = 2
+  const changeSpuScene = ref<Main | Spu | Sku>(0)
 
   /**======展示 SPU 数据的页面平台====== */
   /* 分页器组件部分 数据 && 方法 */
@@ -112,8 +118,8 @@
   const handleSizeChange = () => {
     fetchSpuListDataByPage()
   }
-  /** 关于 SPU 子组件需要用到的属性值 && 回调方法 */
-  // 子组件 button -> @click 回调 ： 切换回主场景
+  /** 关于 SPU 子组件 || SKU 子组件需要用到的属性值 && 回调方法 */
+  // spu 子组件 button -> @click 回调 ： 切换回主场景
   type Status = 'create' | 'update' | ''
   const spuReturnScene = (params: { status: Status }) => {
     changeSpuScene.value = 0
@@ -122,6 +128,11 @@
     } else {
       fetchSpuListDataByPage(pageNo.value)
     }
+  }
+  // sku 子组件返回按钮 ： @click : 切换回主场景
+  const skuReturnScene = () => {
+    // 切换场景
+    changeSpuScene.value = 0
   }
 
   /**======添加 SPU 数据的页面平台====== */
@@ -137,6 +148,11 @@
     }
     // 切换场景
     changeSpuScene.value = 1
+  }
+  // 添加 SKU 按钮 ： @click ： 添加 SKU数据
+  const changeSceneToSku = () => {
+    // 场景切换
+    changeSpuScene.value = 2
   }
 
   /**======添加 SKU 数据的页面平台====== */
