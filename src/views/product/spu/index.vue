@@ -28,7 +28,7 @@
           <el-table-column label="操作" width="220" align="center">
             <template #="{ row, $index }">
               <el-button
-                @click="changeSceneToSku"
+                @click="changeSceneToSku(row)"
                 size="small"
                 type="primary"
                 :icon="Plus"
@@ -65,7 +65,7 @@
     </div>
     <!-- 添加 SKU 数据平台卡片【组件】 -->
     <div v-show="changeSpuScene === 2">
-      <SkuForm @scene="skuReturnScene" />
+      <SkuForm ref="skuRef" @scene="skuReturnScene" />
     </div>
   </div>
 </template>
@@ -149,13 +149,17 @@
     // 切换场景
     changeSpuScene.value = 1
   }
+
+  /**======添加 SKU 数据的页面平台====== */
+  const skuRef = ref() // skuForm 子组件实例
   // 添加 SKU 按钮 ： @click ： 添加 SKU数据
-  const changeSceneToSku = () => {
+  const changeSceneToSku = (item: IRecordsItem) => {
+    const { firstCategoryId, secondCategoryId } = categoryStore
+    // 初始化子组件数据
+    skuRef.value.initData(item, firstCategoryId, secondCategoryId)
     // 场景切换
     changeSpuScene.value = 2
   }
-
-  /**======添加 SKU 数据的页面平台====== */
 
   /**======数据请求方法合集====== */
   // 获取 SPU 的数据
