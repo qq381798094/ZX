@@ -10,6 +10,8 @@ import type {
   TAllSaleAttributesResponseData,
   TAddOrUpdateSpuResponseData,
   IAddOrUpdateParams,
+  SkuAddOrUpdateParams,
+  TAddSkuResponseData,
 } from './type'
 
 /** 接口地址枚举 */
@@ -28,6 +30,8 @@ enum API {
   POST_ADD_NEW_SPU_DATA__URL = '/admin/product/saveSpuInfo',
   // 更新当前的 SPU 数据
   POST_UPDATE_SPU_DATA__URL = '/admin/product/updateSpuInfo',
+  // 追加一个新的 SKU 地址
+  POST_ADD_SKU__URL = '/admin/product/saveSkuInfo',
 }
 
 // 根据页码和当前页数据获取 SPU 数据
@@ -62,3 +66,7 @@ export const requestAddOrUpdateSpuDataAPI = (data: IAddOrUpdateParams) => {
     return request.post<any, TAddOrUpdateSpuResponseData>(API.POST_ADD_NEW_SPU_DATA__URL, data)
   }
 }
+
+// 追加一个新的 SKU 地址
+export const requestAddSkuDataAPI = (data: SkuAddOrUpdateParams) =>
+  request.post<any, TAddSkuResponseData>(API.POST_ADD_SKU__URL, data)

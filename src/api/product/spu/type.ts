@@ -59,6 +59,7 @@ export interface ISpuImageItem {
   createTime?: string
   updateTime?: string
   spuId?: number
+  selected?: boolean
 }
 
 // 获取某个 SPU 下的所有图片数组数据部分 返回数据的类型约束
@@ -85,6 +86,7 @@ export interface ISpuSaleAttributeItem {
   updateTime?: string | null
   flag?: boolean
   attributeValue?: string
+  saleAttrAndValueId?: string
 }
 
 // 获取某一个 SPU 下全部的销售属性数据部分 返回数据的类型约束
@@ -115,3 +117,29 @@ export interface IAddOrUpdateParams {
 
 // 添加 || 修改 SPU 数据的返回类型约束
 export type TAddOrUpdateSpuResponseData = ISpuResponseData<string | null>
+
+// 添加 SKU 数据 ： 所需要的参数类型
+export type SkuAttrValueItem = {
+  attrId: number | undefined
+  valueId: number | undefined
+}
+export type SkuSaleAttrValueItem = {
+  saleAttrId: number | undefined
+  saleAttrValueId: number | undefined
+}
+export type SkuAddOrUpdateParams = {
+  id?: number
+  category3Id: number | undefined
+  spuId: number | undefined
+  tmId: number | undefined
+  skuName: string
+  price: number | undefined
+  weight: string
+  skuDesc: string
+  skuDefaultImg: string
+  skuAttrValueList: null | SkuAttrValueItem[]
+  skuSaleAttrValueList: null | SkuSaleAttrValueItem[]
+}
+
+// 添加 SKU 数据返回类型
+export type TAddSkuResponseData = ISpuResponseData<string | null>

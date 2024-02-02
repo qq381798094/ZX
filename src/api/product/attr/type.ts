@@ -33,6 +33,7 @@ export interface IAttrResponseDataItem {
   categoryId: number
   categoryLevel: number
   attrValueList: IAttrValueItem[]
+  attrAndValueId?: string
 }
 
 export type TAttrResponseData = IResponseData<IAttrResponseDataItem[]>

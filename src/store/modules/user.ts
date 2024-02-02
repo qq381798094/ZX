@@ -23,6 +23,8 @@ export default defineStore('User', {
     // 用户登录
     async loginStatus(data: ILoginParams) {
       const result: ILoginResponseData = await requestLoginAPI(data)
+      console.log(result)
+
       //   判断返回结果返回相对应的 Promise 状态
       if (result.code === 200) {
         // 登录成功
