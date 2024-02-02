@@ -143,3 +143,23 @@ export type SkuAddOrUpdateParams = {
 
 // 添加 SKU 数据返回类型
 export type TAddSkuResponseData = ISpuResponseData<string | null>
+
+// 查看 SKU 数据
+export type FindSkuDataItem = {
+  category3Id: number
+  createTime: string
+  id: number
+  isSale: number
+  price: number
+  skuAttrValueList: null
+  skuDefaultImg: string
+  skuDesc: string
+  skuImageList: null
+  skuName: string
+  skuSaleAttrValueList: null
+  spuId: number
+  tmId: number
+  updateTime: string
+  weight: string
+}
+export type FindSkuDataResponseData = ISpuResponseData<FindSkuDataItem[]>

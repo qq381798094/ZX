@@ -41,7 +41,13 @@
                 title="修改 SPU"
                 @click="changeScene(true, row)"
               />
-              <el-button size="small" type="info" :icon="InfoFilled" title="查看 SPU 列表" />
+              <el-button
+                @click="findSkuData(row)"
+                size="small"
+                type="info"
+                :icon="InfoFilled"
+                title="查看 SKU 列表"
+              />
               <el-button size="small" type="danger" :icon="Delete" title="删除当前 SPU" />
             </template>
           </el-table-column>
@@ -57,6 +63,19 @@
           layout="prev, pager, next, jumper, -> ,sizes, total"
           :total="totalData"
         />
+        <!-- 查看 SKU 数据对话框 -->
+        <el-dialog v-model="skuDataVisible" title="SKU 列表">
+          <el-table :data="skuDataList" border>
+            <el-table-column prop="skuName" label="SKU 名称" align="center" />
+            <el-table-column prop="price" label="SKU 价格" align="center" />
+            <el-table-column prop="weight" label="SKU 重量" align="center" />
+            <el-table-column label="SKU 图片" align="center">
+              <template #default="scope">
+                <img class="dialog-table-img" :src="scope.row.skuDefaultImg" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-dialog>
       </el-card>
     </div>
     <!-- 添加 || 修改 SPU 数据平台卡片【组件】 -->
@@ -77,11 +96,17 @@
   import SkuForm from './component/SkuForm.vue'
   import SpuForm from './component/SpuForm.vue'
   /** EL 组件引入 */
+  import { ElMessage } from 'element-plus'
   import { Plus, Edit, InfoFilled, Delete } from '@element-plus/icons-vue'
   /** 接口引入 */
-  import { requestSpuDataByPageAPI } from '@/api/product/spu'
+  import { requestSpuDataByPageAPI, requestSkuDataByIdAPI } from '@/api/product/spu'
   /** 接口类型约束引入 */
-  import type { TGetSpuResponseData, IRecordsItem } from '@/api/product/spu/type'
+  import type {
+    TGetSpuResponseData,
+    IRecordsItem,
+    FindSkuDataResponseData,
+    FindSkuDataItem,
+  } from '@/api/product/spu/type'
   /** 仓库引入 */
   import useCategoryStore from '@/store/modules/category'
 
@@ -118,6 +143,7 @@
   const handleSizeChange = () => {
     fetchSpuListDataByPage()
   }
+
   /** 关于 SPU 子组件 || SKU 子组件需要用到的属性值 && 回调方法 */
   // spu 子组件 button -> @click 回调 ： 切换回主场景
   type Status = 'create' | 'update' | ''
@@ -150,7 +176,7 @@
     changeSpuScene.value = 1
   }
 
-  /**======添加 SKU 数据的页面平台====== */
+  /**====== SKU 数据的页面平台====== */
   const skuRef = ref() // skuForm 子组件实例
   // 添加 SKU 按钮 ： @click ： 添加 SKU数据
   const changeSceneToSku = (item: IRecordsItem) => {
@@ -159,6 +185,20 @@
     skuRef.value.initData(item, firstCategoryId, secondCategoryId)
     // 场景切换
     changeSpuScene.value = 2
+  }
+  // 关于 SKU 展示对话框相关
+  const skuDataVisible = ref<boolean>(false)
+  // 查看 SKU 数据按钮 ： @click
+  const skuDataList = ref<FindSkuDataItem[]>([])
+  const findSkuData = async (item: IRecordsItem) => {
+    // 打开对话框
+    skuDataVisible.value = true
+    // 请求发送
+    try {
+      skuDataList.value = await fetchSkuListDataById(item.id!)
+    } catch (e) {
+      ElMessage.error('数据获取失败')
+    }
   }
 
   /**======数据请求方法合集====== */
@@ -180,6 +220,15 @@
       return Promise.reject(new Error(result.message))
     }
   }
+  // 获取 SKU 的数据
+  const fetchSkuListDataById = async (id: number) => {
+    const result: FindSkuDataResponseData = await requestSkuDataByIdAPI(id)
+    if (result.code === 200) {
+      return result.data
+    } else {
+      return Promise.reject(new Error('数据请求失败'))
+    }
+  }
 </script>
 <script lang="ts">
   export default {
@@ -195,5 +244,10 @@
   // 表格样式
   .table-box {
     margin: 20px 0;
+  }
+  // SKU 展示表格图片
+  .dialog-table-img {
+    width: 100px;
+    height: 100px;
   }
 </style>
