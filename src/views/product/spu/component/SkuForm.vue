@@ -63,7 +63,7 @@
           <el-table-column type="selection" width="80" align="center" />
           <!-- 图片 -->
           <el-table-column label="图片" width="300" align="center">
-            <template #="{ row }">
+            <template #default="{ row }">
               <img class="table-img" :src="row.imgUrl" />
             </template>
           </el-table-column>
@@ -71,7 +71,7 @@
           <el-table-column prop="imgName" label="名称" align="center" />
           <!-- 操作 -->
           <el-table-column label="操作" width="180" align="center">
-            <template #="{ row }">
+            <template #default="{ row }">
               <el-button
                 :type="row.selected ? 'success' : 'warning'"
                 @click="settingDefaultImg(row)"

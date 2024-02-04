@@ -13,6 +13,7 @@ import type {
   SkuAddOrUpdateParams,
   TAddSkuResponseData,
   FindSkuDataResponseData,
+  ISpuResponseData,
 } from './type'
 
 /** 接口地址枚举 */
@@ -35,6 +36,8 @@ enum API {
   POST_ADD_SKU__URL = '/admin/product/saveSkuInfo',
   // 根据 spuId 查看某一个 SPU 下的所有 SKU 数据
   GET_SKU_DATA_BY_ID__URL = '/admin/product/findBySpuId/',
+  // 删除已有的 SPU 数据
+  DELETE_SPU_DATA_BY_ID__URL = '/admin/product/deleteSpu/',
 }
 
 // 根据页码和当前页数据获取 SPU 数据
@@ -77,3 +80,7 @@ export const requestAddSkuDataAPI = (data: SkuAddOrUpdateParams) =>
 // 根据 spuId 查看某一个 SPU 下的所有 SKU 数据
 export const requestSkuDataByIdAPI = (spuId: number) =>
   request.get<any, FindSkuDataResponseData>(API.GET_SKU_DATA_BY_ID__URL + spuId)
+
+// 删除已有的 SPU 数据
+export const requestDelSpuDataByIdAPI = (spuId: number) =>
+  request.delete<any, ISpuResponseData<string | null>>(API.DELETE_SPU_DATA_BY_ID__URL + spuId)

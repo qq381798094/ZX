@@ -63,7 +63,7 @@
           <el-table-column label="序号" type="index" width="100" align="center" />
           <el-table-column label="属性名" prop="saleAttrName" width="150" align="center" />
           <el-table-column label="属性值">
-            <template #="{ row, $index }">
+            <template #default="{ row, $index }">
               <el-tag
                 class="tag-item"
                 v-for="(tag, index) in row.spuSaleAttrValueList"
@@ -92,7 +92,7 @@
             </template>
           </el-table-column>
           <el-table-column label="操作" width="150" align="center">
-            <template #="{ row, $index }">
+            <template #default="{ $index }">
               <el-button
                 @click="handleRemoveAttribute($index)"
                 size="small"

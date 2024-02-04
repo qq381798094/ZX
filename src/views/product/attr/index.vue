@@ -20,7 +20,7 @@
           <el-table-column label="序号" align="center" type="index" width="100px" />
           <el-table-column label="属性名称" align="center" prop="attrName" width="140px" />
           <el-table-column label="属性值名称">
-            <template #="{ row, $index }">
+            <template #default="{ row }">
               <!-- 属性值 -->
               <el-tag class="tag-box" v-for="tag in row.attrValueList" :key="tag.id">
                 {{ tag.valueName }}
@@ -28,7 +28,7 @@
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="160px">
-            <template #="{ row }">
+            <template #default="{ row }">
               <!-- 编辑 -->
               <el-button
                 @click="handleEditAttribute(row)"
@@ -78,7 +78,7 @@
         <el-table :data="addAttributeParams.attrValueList" border class="table-box">
           <el-table-column label="序号" width="100px" type="index" align="center" />
           <el-table-column label="属性值名称">
-            <template #="{ row, $index }">
+            <template #default="{ row, $index }">
               <!-- :ref -> 存储 input 的实例到 inputRefArr  -->
               <el-input
                 :ref="(el: any) => (inputRefArr[$index] = el)"
@@ -97,7 +97,7 @@
             </template>
           </el-table-column>
           <el-table-column label="属性值操作" width="200px">
-            <template #="{ row, $index }">
+            <template #default="{ $index }">
               <el-button
                 :icon="Delete"
                 @click="addAttributeParams.attrValueList.splice($index, 1)"

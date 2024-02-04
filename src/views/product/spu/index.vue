@@ -26,7 +26,7 @@
           />
           <el-table-column label="SPU 描述" show-overflow-tooltip prop="description" />
           <el-table-column label="操作" width="220" align="center">
-            <template #="{ row, $index }">
+            <template #default="{ row }">
               <el-button
                 @click="changeSceneToSku(row)"
                 size="small"
@@ -48,7 +48,15 @@
                 :icon="InfoFilled"
                 title="查看 SKU 列表"
               />
-              <el-button size="small" type="danger" :icon="Delete" title="删除当前 SPU" />
+              <el-popconfirm
+                :title="`你确定要删除${row.spuName}吗？`"
+                width="200px"
+                @confirm="delCurrentData(row.id)"
+              >
+                <template #reference>
+                  <el-button size="small" type="danger" :icon="Delete" title="删除当前 SPU" />
+                </template>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -91,7 +99,7 @@
 
 <script setup lang="ts">
   /** API 引入 */
-  import { ref, watch } from 'vue'
+  import { ref, watch, onBeforeUnmount } from 'vue'
   /** 子组件引入 */
   import SkuForm from './component/SkuForm.vue'
   import SpuForm from './component/SpuForm.vue'
@@ -99,19 +107,30 @@
   import { ElMessage } from 'element-plus'
   import { Plus, Edit, InfoFilled, Delete } from '@element-plus/icons-vue'
   /** 接口引入 */
-  import { requestSpuDataByPageAPI, requestSkuDataByIdAPI } from '@/api/product/spu'
+  import {
+    requestSpuDataByPageAPI,
+    requestSkuDataByIdAPI,
+    requestDelSpuDataByIdAPI,
+  } from '@/api/product/spu'
   /** 接口类型约束引入 */
   import type {
     TGetSpuResponseData,
     IRecordsItem,
     FindSkuDataResponseData,
     FindSkuDataItem,
+    ISpuResponseData,
   } from '@/api/product/spu/type'
   /** 仓库引入 */
   import useCategoryStore from '@/store/modules/category'
 
   /** 仓库实例化 */
   let categoryStore = useCategoryStore()
+
+  /** 路由组件销毁时执行当前函数 */
+  onBeforeUnmount(() => {
+    // 清空仓库
+    categoryStore.$reset()
+  })
 
   /** 该 watch 监听仓库中的 category3Id */
   watch(
@@ -175,6 +194,17 @@
     // 切换场景
     changeSpuScene.value = 1
   }
+  // 删除 SPU 按钮 : @click
+  const delCurrentData = async (spuId: number) => {
+    try {
+      await removeSpuDataById(spuId)
+      ElMessage.success('成功删除 SPU 数据')
+      // 重新获取
+      await fetchSpuListDataByPage(pageNo.value)
+    } catch (e) {
+      ElMessage.error('删除失败')
+    }
+  }
 
   /**====== SKU 数据的页面平台====== */
   const skuRef = ref() // skuForm 子组件实例
@@ -227,6 +257,15 @@
       return result.data
     } else {
       return Promise.reject(new Error('数据请求失败'))
+    }
+  }
+  // 删除当前 SPU 数据
+  const removeSpuDataById = async (spuId: number) => {
+    const result: ISpuResponseData<string | null> = await requestDelSpuDataByIdAPI(spuId)
+    if (result.code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('删除失败'))
     }
   }
 </script>

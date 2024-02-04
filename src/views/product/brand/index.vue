@@ -10,14 +10,14 @@
         <el-table-column type="index" label="序号" align="center" width="80" />
         <el-table-column prop="tmName" label="品牌名称" align="center" />
         <el-table-column label="品牌 Logo" align="center">
-          <template #="{ row }">
+          <template #default="{ row }">
             <div class="brand-img">
               <img :src="row.logoUrl" alt="图片加载出错" />
             </div>
           </template>
         </el-table-column>
         <el-table-column label="品牌操作" align="center">
-          <template #="{ row, $index }">
+          <template #default="{ row }">
             <!-- 编辑 -->
             <el-button
               type="warning"
