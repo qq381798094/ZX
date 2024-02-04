@@ -19,9 +19,14 @@
       <el-table-column label="价格" prop="price" width="120" align="center" />
       <!-- 操作 -->
       <el-table-column label="操作" align="center" fixed="right">
-        <template #default>
-          <el-button :icon="Bottom" type="info" size="small" />
-          <el-button :icon="Edit" type="primary" size="small" />
+        <template #default="{ row }">
+          <el-button
+            @click="handleSaleOption(row)"
+            :icon="row.isSale === 1 ? Bottom : Top"
+            :type="row.isSale === 1 ? 'info' : 'success'"
+            size="small"
+          />
+          <el-button @click="handleUpdateOption" :icon="Edit" type="primary" size="small" />
           <el-button :icon="InfoFilled" type="info" size="small" />
           <el-button :icon="Delete" type="danger" size="small" />
         </template>
@@ -45,12 +50,16 @@
   /** API */
   import { ref, onMounted } from 'vue'
   /** 接口引入 */
-  import { requestSkuDataByPageAPI } from '@/api/product/sku'
+  import {
+    requestSkuDataByPageAPI,
+    requestCancelSaleSkuByIdAPI,
+    requestOnSaleSkuByIdAPI,
+  } from '@/api/product/sku'
   /** 接口类型引入 */
   import { SkuListResponseData, SkuListDataRecordsItem } from '@/api/product/sku/type'
   /** EL 组件相关引入 */
-  import { ElMessage } from 'element-plus'
-  import { Bottom, Edit, InfoFilled, Delete } from '@element-plus/icons-vue'
+  import { ElMessage, ElNotification } from 'element-plus'
+  import { Bottom, Edit, InfoFilled, Delete, Top } from '@element-plus/icons-vue'
 
   /** 组件初次挂载完毕执行 */
   onMounted(async () => {
@@ -64,6 +73,35 @@
 
   /**  SKU 列表数据相关 */
   const skuList = ref<SkuListDataRecordsItem[]>([])
+  // 列表操作按钮
+  // 控制 SKU 商品上架 or 下架
+  const handleSaleOption = async (item: SkuListDataRecordsItem) => {
+    // isSale=1 : 上架 -> 下架
+    if (item.isSale === 1) {
+      try {
+        await handleCancelSale(item.id)
+        ElMessage.info('成功下架当前商品')
+      } catch (e) {
+        ElMessage.error('操作失败')
+      }
+    } else {
+      try {
+        await handleOnSale(item.id)
+        ElMessage.success('成功上架当前商品')
+      } catch (e) {
+        ElMessage.error('操作失败')
+      }
+    }
+    fetchSkuListData(pageNo.value)
+  }
+  // 更新 SKU 商品【施工中】
+  const handleUpdateOption = () => {
+    ElNotification({
+      type: 'info',
+      message: '当前功能正在施工中...请耐心等候',
+      title: '温馨提示',
+    })
+  }
 
   /** 分页器相关 */
   const pageNo = ref<number>(1)
@@ -86,6 +124,24 @@
       return result.data
     } else {
       return Promise.reject(new Error('数据请求失败'))
+    }
+  }
+  // SKU 下架请求
+  const handleCancelSale = async (skuId: number) => {
+    const result = await requestCancelSaleSkuByIdAPI(skuId)
+    if (result.code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // SKU 上架请求
+  const handleOnSale = async (skuId: number) => {
+    const result = await requestOnSaleSkuByIdAPI(skuId)
+    if (result.code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('失败'))
     }
   }
 </script>
