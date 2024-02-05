@@ -2,7 +2,7 @@
 import request from '@/utils/request'
 
 /** 类型引入 */
-import { SkuListResponseData, SkuResponseData } from './type'
+import { SkuListResponseData, SkuResponseData, SkuGoodsInfoResponseData } from './type'
 
 /** 接口地址枚举 */
 enum API {
@@ -12,6 +12,8 @@ enum API {
   GET_SKU_CANCEL_SALE_BY_ID__URL = '/admin/product/cancelSale/',
   // SKU 上架请求
   GET_SKU_ON_SALE_BY_ID__URL = '/admin/product/onSale/',
+  // 获取商品详情数据
+  GET_SKU_INFO_BY_ID__URL = '/admin/product/getSkuInfo/',
 }
 
 // 根据页码获取数据
@@ -25,3 +27,7 @@ export const requestOnSaleSkuByIdAPI = (skuId: number) =>
 // SKU 下架请求
 export const requestCancelSaleSkuByIdAPI = (skuId: number) =>
   request.get<any, SkuResponseData<string | null>>(API.GET_SKU_CANCEL_SALE_BY_ID__URL + skuId)
+
+// 获取商品详情数据
+export const requestSkuInfoByIdAPI = (skuId: number) =>
+  request.get<any, SkuGoodsInfoResponseData>(API.GET_SKU_INFO_BY_ID__URL + skuId)

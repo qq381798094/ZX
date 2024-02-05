@@ -38,3 +38,54 @@ export type SkuListDataObject = {
   pages: number
 }
 export type SkuListResponseData = SkuResponseData<SkuListDataObject>
+
+// 关于获取 SKU 商品详情数据类型约束
+export type SkuSaleAttrValueItem = {
+  id: number
+  createTime: string
+  updateTime: string
+  skuId: number
+  spuId: number
+  saleAttrValueId: number
+  saleAttrId: number
+  saleAttrName: string
+  saleAttrValueName: string
+}
+export type SkuAttrValueItem = {
+  id: number
+  createTime: string
+  updateTime: string
+  attrId: number
+  valueId: number
+  skuId: number
+  attrName: string
+  valueName: string
+}
+export type SkuImageItem = {
+  id: number
+  createTime: string
+  updateTime: string
+  skuId: number
+  imgName: string
+  imgUrl: string
+  spuImgId: number
+  isDefault: string
+}
+export type SkuGoodsInfoObject = {
+  id: number
+  createTime: string
+  updateTime: string
+  spuId: number
+  price: number
+  skuName: string
+  skuDesc: string
+  weight: string
+  tmId: number
+  category3Id: number
+  skuDefaultImg: string
+  isSale: number
+  skuImageList: SkuImageItem[]
+  skuAttrValueList: SkuAttrValueItem[]
+  skuSaleAttrValueList: SkuSaleAttrValueItem[]
+}
+export type SkuGoodsInfoResponseData = SkuResponseData<SkuGoodsInfoObject>

@@ -28,7 +28,7 @@
           />
           <el-button @click="handleUpdateOption" :icon="Edit" type="primary" size="small" />
           <el-button
-            @click="handleShowGoodsInfoDrawer"
+            @click="handleShowGoodsInfoDrawer(row)"
             :icon="InfoFilled"
             type="info"
             size="small"
@@ -58,40 +58,49 @@
       <template #default>
         <!-- 名称 -->
         <el-row class="row-content">
-          <el-col :span="7">名称</el-col>
-          <el-col :span="17">xxxxx</el-col>
+          <el-col :span="6">名称</el-col>
+          <el-col :span="18">{{ skuGoodsInfo.skuName }}</el-col>
         </el-row>
         <!-- 描述 -->
         <el-row class="row-content">
-          <el-col :span="7">描述</el-col>
-          <el-col :span="17">xxxxx</el-col>
+          <el-col :span="6">描述</el-col>
+          <el-col :span="18">{{ skuGoodsInfo.skuDesc }}</el-col>
         </el-row>
         <!-- 价格 -->
         <el-row class="row-content">
-          <el-col :span="7">价格</el-col>
-          <el-col :span="17">xxxxx</el-col>
+          <el-col :span="6">价格</el-col>
+          <el-col :span="18">{{ skuGoodsInfo.price }}</el-col>
         </el-row>
         <!-- 平台属性 -->
         <el-row class="row-content">
-          <el-col :span="7">平台属性</el-col>
-          <el-col :span="17">
-            <el-tag class="row-tag" v-for="item in 6" :key="item">x{{ item }}</el-tag>
+          <el-col :span="6">平台属性</el-col>
+          <el-col :span="18">
+            <el-tag class="row-tag" v-for="attr in skuGoodsInfo.skuAttrValueList" :key="attr.id">
+              {{ attr.attrName }}
+            </el-tag>
           </el-col>
         </el-row>
         <!-- 销售属性 -->
         <el-row class="row-content">
-          <el-col :span="7">销售属性</el-col>
-          <el-col :span="17">
-            <el-tag class="row-tag" v-for="item in 5" :key="item" type="danger">y{{ item }}</el-tag>
+          <el-col :span="6">销售属性</el-col>
+          <el-col :span="18">
+            <el-tag
+              class="row-tag"
+              v-for="sale in skuGoodsInfo.skuSaleAttrValueList"
+              :key="sale.id"
+              type="danger"
+            >
+              {{ sale.saleAttrValueName }}
+            </el-tag>
           </el-col>
         </el-row>
         <!-- 商品图片 -->
         <el-row class="row-content">
-          <el-col :span="7">商品图片</el-col>
-          <el-col :span="17">
+          <el-col :span="6">商品图片</el-col>
+          <el-col :span="18">
             <el-carousel type="card" height="100px" indicator-position="outside" :interval="5000">
-              <el-carousel-item v-for="item in 6" :key="item">
-                <img class="carousel-img" src="@/assets/images/background.jpg" />
+              <el-carousel-item v-for="img in skuGoodsInfo.skuImageList" :key="img.id">
+                <img class="carousel-img" :src="img.imgUrl" />
               </el-carousel-item>
             </el-carousel>
           </el-col>
@@ -109,9 +118,14 @@
     requestSkuDataByPageAPI,
     requestCancelSaleSkuByIdAPI,
     requestOnSaleSkuByIdAPI,
+    requestSkuInfoByIdAPI,
   } from '@/api/product/sku'
   /** 接口类型引入 */
-  import { SkuListResponseData, SkuListDataRecordsItem } from '@/api/product/sku/type'
+  import {
+    SkuListResponseData,
+    SkuListDataRecordsItem,
+    SkuGoodsInfoObject,
+  } from '@/api/product/sku/type'
   /** EL 组件相关引入 */
   import { ElMessage, ElNotification } from 'element-plus'
   import { Bottom, Edit, InfoFilled, Delete, Top } from '@element-plus/icons-vue'
@@ -128,6 +142,7 @@
 
   /**  SKU 列表数据相关 */
   const skuList = ref<SkuListDataRecordsItem[]>([])
+  const skuGoodsInfo = ref<SkuGoodsInfoObject>({} as SkuGoodsInfoObject)
   // 列表操作按钮
   // 控制 SKU 商品上架 or 下架
   const handleSaleOption = async (item: SkuListDataRecordsItem) => {
@@ -158,8 +173,16 @@
     })
   }
   // 查看商品详情 @click【抽屉效果】
-  const handleShowGoodsInfoDrawer = () => {
+  const handleShowGoodsInfoDrawer = async (item: SkuListDataRecordsItem) => {
+    const { id } = item
+    // 召唤抽屉
     drawerVisible.value = true
+    try {
+      // 请求详情数据
+      skuGoodsInfo.value = await fetchSkuGoodsInfoData(id)
+    } catch (e) {
+      ElMessage.error('获取数据失败')
+    }
   }
 
   /** 抽屉【商品详情】相关 */
@@ -206,6 +229,16 @@
       return Promise.reject(new Error('失败'))
     }
   }
+  // 获取 SKU 某一个商品的商品详情
+  const fetchSkuGoodsInfoData = async (skuId: number) => {
+    const result = await requestSkuInfoByIdAPI(skuId)
+    const { code, data } = result
+    if (code === 200) {
+      return data
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
 </script>
 <script lang="ts">
   export default {
@@ -227,12 +260,14 @@
   }
   .row-content {
     margin-bottom: 30px;
+    line-height: 25px;
     &:last-child {
       margin-bottom: none;
     }
   }
   .row-tag {
     margin-right: 8px;
+    margin-bottom: 10px;
     &:last-child {
       margin-right: none;
     }
