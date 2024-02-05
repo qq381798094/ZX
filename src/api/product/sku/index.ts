@@ -14,6 +14,8 @@ enum API {
   GET_SKU_ON_SALE_BY_ID__URL = '/admin/product/onSale/',
   // 获取商品详情数据
   GET_SKU_INFO_BY_ID__URL = '/admin/product/getSkuInfo/',
+  // 删除 SKU 商品
+  DELETE_SKU_GOODS_BY_ID__URL = '/admin/product/deleteSku/',
 }
 
 // 根据页码获取数据
@@ -31,3 +33,7 @@ export const requestCancelSaleSkuByIdAPI = (skuId: number) =>
 // 获取商品详情数据
 export const requestSkuInfoByIdAPI = (skuId: number) =>
   request.get<any, SkuGoodsInfoResponseData>(API.GET_SKU_INFO_BY_ID__URL + skuId)
+
+// 删除 SKU 商品
+export const requestDeleteSkuGoodsByIdAPI = (skuId: number) =>
+  request.delete<any, SkuResponseData<string | null>>(API.DELETE_SKU_GOODS_BY_ID__URL + skuId)

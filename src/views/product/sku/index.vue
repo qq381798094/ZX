@@ -33,7 +33,15 @@
             type="info"
             size="small"
           />
-          <el-button :icon="Delete" type="danger" size="small" />
+          <el-popconfirm
+            @confirm="handleDeleteSkuGoods(row)"
+            :title="`你确定要删除${row.skuName}吗？`"
+            width="200"
+          >
+            <template #reference>
+              <el-button :icon="Delete" type="danger" size="small" />
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -119,6 +127,7 @@
     requestCancelSaleSkuByIdAPI,
     requestOnSaleSkuByIdAPI,
     requestSkuInfoByIdAPI,
+    requestDeleteSkuGoodsByIdAPI,
   } from '@/api/product/sku'
   /** 接口类型引入 */
   import {
@@ -143,6 +152,7 @@
   /**  SKU 列表数据相关 */
   const skuList = ref<SkuListDataRecordsItem[]>([])
   const skuGoodsInfo = ref<SkuGoodsInfoObject>({} as SkuGoodsInfoObject)
+
   // 列表操作按钮
   // 控制 SKU 商品上架 or 下架
   const handleSaleOption = async (item: SkuListDataRecordsItem) => {
@@ -184,6 +194,19 @@
       ElMessage.error('获取数据失败')
     }
   }
+  // 删除 SKU 商品【行】
+  const handleDeleteSkuGoods = async (item: SkuListDataRecordsItem) => {
+    const { id } = item
+    try {
+      await handleDelSkuInfoById(id)
+      // 提示
+      ElMessage.success('成功删除该商品')
+      // 重新获取数据列表 -> 若是最后一页的最后一条【也是第一条】数据被删除，则回跳到上一页
+      await fetchSkuListData(skuList.value.length > 1 ? pageNo.value : pageNo.value - 1)
+    } catch (e) {
+      ElMessage.error('操作失败')
+    }
+  }
 
   /** 抽屉【商品详情】相关 */
   const drawerVisible = ref<boolean>(false)
@@ -201,12 +224,13 @@
   const fetchSkuListData = async (pager = 1) => {
     pageNo.value = pager
     const result: SkuListResponseData = await requestSkuDataByPageAPI(pageNo.value, pageSize.value)
-    if (result.code === 200) {
-      const { records, total } = result.data
+    const { code, data } = result
+    if (code === 200) {
+      const { records, total } = data
       // 存储数据
       skuList.value = records
       totalData.value = total
-      return result.data
+      return data
     } else {
       return Promise.reject(new Error('数据请求失败'))
     }
@@ -214,7 +238,8 @@
   // SKU 下架请求
   const handleCancelSale = async (skuId: number) => {
     const result = await requestCancelSaleSkuByIdAPI(skuId)
-    if (result.code === 200) {
+    const { code } = result
+    if (code === 200) {
       return 'ok'
     } else {
       return Promise.reject(new Error('失败'))
@@ -223,7 +248,8 @@
   // SKU 上架请求
   const handleOnSale = async (skuId: number) => {
     const result = await requestOnSaleSkuByIdAPI(skuId)
-    if (result.code === 200) {
+    const { code } = result
+    if (code === 200) {
       return 'ok'
     } else {
       return Promise.reject(new Error('失败'))
@@ -235,6 +261,15 @@
     const { code, data } = result
     if (code === 200) {
       return data
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // 删除某个 SKU 商品
+  const handleDelSkuInfoById = async (skuId: number) => {
+    const result = await requestDeleteSkuGoodsByIdAPI(skuId)
+    if (result.code === 200) {
+      return 'ok'
     } else {
       return Promise.reject(new Error('失败'))
     }
