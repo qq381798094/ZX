@@ -51,9 +51,11 @@
           show-overflow-tooltip
         />
         <el-table-column label="操作" width="270" align="center">
-          <template #default>
+          <template #default="{ row }">
             <el-button :icon="User" type="primary" size="small">分配角色</el-button>
-            <el-button :icon="Edit" type="warning" size="small">编辑</el-button>
+            <el-button @click="handleEditUserInfo(row)" :icon="Edit" type="warning" size="small">
+              编辑
+            </el-button>
             <el-button :icon="Delete" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -73,7 +75,7 @@
     <!-- 新增用户抽屉 -->
     <el-drawer v-model="userFormDrawer">
       <template #header>
-        <h4>添加用户</h4>
+        <h4>{{ userInfoParams.id ? '更新用户' : '添加用户' }}</h4>
       </template>
       <template #default>
         <el-form ref="drawerFormRef" :model="userInfoParams" :rules="rules">
@@ -83,7 +85,7 @@
           <el-form-item label="用户昵称" prop="name">
             <el-input v-model="userInfoParams.name" placeholder="请您输入用户昵称" />
           </el-form-item>
-          <el-form-item label="用户密码" prop="password">
+          <el-form-item label="用户密码" prop="password" v-if="!userInfoParams.id">
             <el-input
               v-model="userInfoParams.password"
               placeholder="请您输入用户密码"
@@ -135,6 +137,7 @@
   const handleAddUserData = () => {
     // 清空参数、表单验证消息、打开抽屉
     Object.assign(userInfoParams, {
+      id: undefined,
       name: '',
       password: '',
       username: '',
@@ -143,6 +146,17 @@
     nextTick(() => {
       drawerFormRef.value!.clearValidate()
     })
+  }
+
+  /** 【表格内】操作表格数据相关 */
+  // 【编辑】 @click
+  const handleEditUserInfo = (item: UserListItem) => {
+    // 开抽屉、存原有数据参数、清表单验证
+    nextTick(() => {
+      drawerFormRef.value!.clearValidate()
+    })
+    userFormDrawer.value = true
+    Object.assign(userInfoParams, item)
   }
 
   /** 分页器相关 */
@@ -168,7 +182,7 @@
       // 关掉抽屉
       userFormDrawer.value = false
       // 重新加载数据
-      await fetchUserList()
+      await fetchUserList(userInfoParams.id ? pageNo.value : 1)
     } catch (e) {
       ElMessage.error('操作失败，请检查数据是否符合标准')
     }
@@ -258,3 +272,5 @@
     margin: 15px 0;
   }
 </style>
+
+/** 还有些细活，今天没精力了。明天继续 */
