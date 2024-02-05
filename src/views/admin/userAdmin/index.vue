@@ -76,18 +76,19 @@
         <h4>添加用户</h4>
       </template>
       <template #default>
-        <el-form>
-          <el-form-item label="用户姓名">
+        <el-form ref="drawerFormRef" :model="userInfoParams" :rules="rules">
+          <el-form-item label="用户姓名" prop="username">
             <el-input v-model="userInfoParams.username" placeholder="请您输入用户姓名" />
           </el-form-item>
-          <el-form-item label="用户昵称">
+          <el-form-item label="用户昵称" prop="name">
             <el-input v-model="userInfoParams.name" placeholder="请您输入用户昵称" />
           </el-form-item>
-          <el-form-item label="用户密码">
+          <el-form-item label="用户密码" prop="password">
             <el-input
               v-model="userInfoParams.password"
               placeholder="请您输入用户密码"
               type="password"
+              show-password
             />
           </el-form-item>
         </el-form>
@@ -102,7 +103,7 @@
 
 <script setup lang="ts">
   /** API */
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, nextTick } from 'vue'
   /** 接口引入 */
   import { requestUserListByPageAPI, requestAddOrUpdateUserAPI } from '@/api/acl/user'
   /** 接口类型引入 */
@@ -110,6 +111,7 @@
   /** EL 组件引入 */
   import { User, Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import type { FormRules, FormInstance } from 'element-plus'
 
   /** 组件挂载成功后触发 */
   onMounted(() => {
@@ -128,6 +130,21 @@
     username: '',
   })
 
+  /** 【表格外】操作表格数据相关 */
+  // 添加用户按钮 @click
+  const handleAddUserData = () => {
+    // 清空参数、表单验证消息、打开抽屉
+    Object.assign(userInfoParams, {
+      name: '',
+      password: '',
+      username: '',
+    })
+    userFormDrawer.value = true
+    nextTick(() => {
+      drawerFormRef.value!.clearValidate()
+    })
+  }
+
   /** 分页器相关 */
   const pageNo = ref<number>(1)
   const pageSize = ref<number>(5)
@@ -143,6 +160,8 @@
   }
   const drawerConfirm = async () => {
     try {
+      // 检验是否通过表单校验
+      await drawerFormRef.value!.validate()
       // 发送请求
       await addOrUpdateUserInfo(userInfoParams)
       ElMessage.success(userInfoParams.id ? '修改成功' : '成功创建')
@@ -155,18 +174,37 @@
     }
   }
 
-  /** 【表格外】操作表格数据相关 */
-  // 添加用户按钮 @click
-  const handleAddUserData = () => {
-    // 清空参数
-    Object.assign(userInfoParams, {
-      name: '',
-      password: '',
-      username: '',
-    })
-    // 打开抽屉
-    userFormDrawer.value = true
+  /** 抽屉【内部】表单相关 */
+  const drawerFormRef = ref<FormInstance>()
+  // 表单校验相关
+  const validateUserName = (rule: any, value: string, callback: any) => {
+    // 长度至少 5 位
+    if (value.trim().length >= 5) {
+      callback()
+    } else {
+      callback(new Error('用户名至少5位'))
+    }
   }
+  const validateName = (rule: any, value: string, callback: any) => {
+    // 长度至少5位
+    if (value.trim().length >= 5) {
+      callback()
+    } else {
+      callback(new Error('昵称长度至少要5位'))
+    }
+  }
+  const validatePassword = (rule: any, value: string, callback: any) => {
+    if (value.trim().length >= 6) {
+      callback()
+    } else {
+      callback(new Error('密码长度至少要6位'))
+    }
+  }
+  const rules = reactive<FormRules<typeof userInfoParams>>({
+    username: [{ validator: validateUserName, trigger: 'blur', required: true }],
+    name: [{ validator: validateName, trigger: 'blur', required: true }],
+    password: [{ validator: validatePassword, trigger: 'blur', required: true }],
+  })
 
   /** 数据请求相关 */
   // 获取用户列表数据
