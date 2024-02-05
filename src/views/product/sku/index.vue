@@ -27,7 +27,12 @@
             size="small"
           />
           <el-button @click="handleUpdateOption" :icon="Edit" type="primary" size="small" />
-          <el-button :icon="InfoFilled" type="info" size="small" />
+          <el-button
+            @click="handleShowGoodsInfoDrawer"
+            :icon="InfoFilled"
+            type="info"
+            size="small"
+          />
           <el-button :icon="Delete" type="danger" size="small" />
         </template>
       </el-table-column>
@@ -43,6 +48,56 @@
       @current-change="fetchSkuListData"
       @size-change="handleSizeChange"
     />
+    <!-- 抽屉 : 商品详情 -->
+    <el-drawer v-model="drawerVisible">
+      <!-- 标题 -->
+      <template #header>
+        <h4>商品详情</h4>
+      </template>
+      <!-- 正文内容 -->
+      <template #default>
+        <!-- 名称 -->
+        <el-row class="row-content">
+          <el-col :span="7">名称</el-col>
+          <el-col :span="17">xxxxx</el-col>
+        </el-row>
+        <!-- 描述 -->
+        <el-row class="row-content">
+          <el-col :span="7">描述</el-col>
+          <el-col :span="17">xxxxx</el-col>
+        </el-row>
+        <!-- 价格 -->
+        <el-row class="row-content">
+          <el-col :span="7">价格</el-col>
+          <el-col :span="17">xxxxx</el-col>
+        </el-row>
+        <!-- 平台属性 -->
+        <el-row class="row-content">
+          <el-col :span="7">平台属性</el-col>
+          <el-col :span="17">
+            <el-tag class="row-tag" v-for="item in 6" :key="item">x{{ item }}</el-tag>
+          </el-col>
+        </el-row>
+        <!-- 销售属性 -->
+        <el-row class="row-content">
+          <el-col :span="7">销售属性</el-col>
+          <el-col :span="17">
+            <el-tag class="row-tag" v-for="item in 5" :key="item" type="danger">y{{ item }}</el-tag>
+          </el-col>
+        </el-row>
+        <!-- 商品图片 -->
+        <el-row class="row-content">
+          <el-col :span="7">商品图片</el-col>
+          <el-col :span="17">
+            <el-carousel type="card" height="100px" indicator-position="outside" :interval="5000">
+              <el-carousel-item v-for="item in 6" :key="item">
+                <img class="carousel-img" src="@/assets/images/background.jpg" />
+              </el-carousel-item>
+            </el-carousel>
+          </el-col>
+        </el-row>
+      </template>
+    </el-drawer>
   </el-card>
 </template>
 
@@ -80,14 +135,14 @@
     if (item.isSale === 1) {
       try {
         await handleCancelSale(item.id)
-        ElMessage.info('成功下架当前商品')
+        ElMessage.info(`成功下架商品${item.skuName}`)
       } catch (e) {
         ElMessage.error('操作失败')
       }
     } else {
       try {
         await handleOnSale(item.id)
-        ElMessage.success('成功上架当前商品')
+        ElMessage.success(`成功上架商品${item.skuName}`)
       } catch (e) {
         ElMessage.error('操作失败')
       }
@@ -102,6 +157,13 @@
       title: '温馨提示',
     })
   }
+  // 查看商品详情 @click【抽屉效果】
+  const handleShowGoodsInfoDrawer = () => {
+    drawerVisible.value = true
+  }
+
+  /** 抽屉【商品详情】相关 */
+  const drawerVisible = ref<boolean>(false)
 
   /** 分页器相关 */
   const pageNo = ref<number>(1)
@@ -162,5 +224,37 @@
   .default-img {
     width: 100px;
     height: 100px;
+  }
+  .row-content {
+    margin-bottom: 30px;
+    &:last-child {
+      margin-bottom: none;
+    }
+  }
+  .row-tag {
+    margin-right: 8px;
+    &:last-child {
+      margin-right: none;
+    }
+  }
+  .carousel-img {
+    width: 100%;
+    height: 100%;
+  }
+  // 走马灯
+  .el-carousel__item h3 {
+    color: #475669;
+    opacity: 0.75;
+    line-height: 200px;
+    margin: 0;
+    text-align: center;
+  }
+
+  .el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+  }
+
+  .el-carousel__item:nth-child(2n + 1) {
+    background-color: #d3dce6;
   }
 </style>
