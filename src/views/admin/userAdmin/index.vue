@@ -149,7 +149,7 @@
   }
 
   /** 【表格内】操作表格数据相关 */
-  // 【编辑】 @click
+  // 【编辑|更新】 @click
   const handleEditUserInfo = (item: UserListItem) => {
     // 开抽屉、存原有数据参数、清表单验证
     nextTick(() => {
@@ -169,6 +169,39 @@
 
   /** 抽屉相关 */
   const userFormDrawer = ref<boolean>(false)
+
+  /** 抽屉【内部】表单相关 */
+  const drawerFormRef = ref<FormInstance>()
+  // 表单校验相关
+  const validateUserName = (_rule: any, value: string, callback: any) => {
+    // 长度至少 5 位
+    if (value.trim().length >= 5) {
+      callback()
+    } else {
+      callback(new Error('用户名至少5位'))
+    }
+  }
+  const validateName = (_rule: any, value: string, callback: any) => {
+    // 长度至少5位
+    if (value.trim().length >= 5) {
+      callback()
+    } else {
+      callback(new Error('昵称长度至少要5位'))
+    }
+  }
+  const validatePassword = (_rule: any, value: string, callback: any) => {
+    if (value.trim().length >= 6) {
+      callback()
+    } else {
+      callback(new Error('密码长度至少要6位'))
+    }
+  }
+  const rules = reactive<FormRules<typeof userInfoParams>>({
+    username: [{ validator: validateUserName, trigger: 'blur', required: true }],
+    name: [{ validator: validateName, trigger: 'blur', required: true }],
+    password: [{ validator: validatePassword, trigger: 'blur', required: true }],
+  })
+  // 表单操作相关
   const drawerCancel = () => {
     userFormDrawer.value = false
   }
@@ -181,44 +214,11 @@
       ElMessage.success(userInfoParams.id ? '修改成功' : '成功创建')
       // 关掉抽屉
       userFormDrawer.value = false
-      // 重新加载数据
-      await fetchUserList(userInfoParams.id ? pageNo.value : 1)
+      window.location.reload()
     } catch (e) {
       ElMessage.error('操作失败，请检查数据是否符合标准')
     }
   }
-
-  /** 抽屉【内部】表单相关 */
-  const drawerFormRef = ref<FormInstance>()
-  // 表单校验相关
-  const validateUserName = (rule: any, value: string, callback: any) => {
-    // 长度至少 5 位
-    if (value.trim().length >= 5) {
-      callback()
-    } else {
-      callback(new Error('用户名至少5位'))
-    }
-  }
-  const validateName = (rule: any, value: string, callback: any) => {
-    // 长度至少5位
-    if (value.trim().length >= 5) {
-      callback()
-    } else {
-      callback(new Error('昵称长度至少要5位'))
-    }
-  }
-  const validatePassword = (rule: any, value: string, callback: any) => {
-    if (value.trim().length >= 6) {
-      callback()
-    } else {
-      callback(new Error('密码长度至少要6位'))
-    }
-  }
-  const rules = reactive<FormRules<typeof userInfoParams>>({
-    username: [{ validator: validateUserName, trigger: 'blur', required: true }],
-    name: [{ validator: validateName, trigger: 'blur', required: true }],
-    password: [{ validator: validatePassword, trigger: 'blur', required: true }],
-  })
 
   /** 数据请求相关 */
   // 获取用户列表数据
@@ -272,5 +272,3 @@
     margin: 15px 0;
   }
 </style>
-
-/** 还有些细活，今天没精力了。明天继续 */

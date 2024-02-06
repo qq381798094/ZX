@@ -114,7 +114,7 @@
   // 获取表单实例
   const brandFormRef = ref<FormInstance>()
   // 品牌名的自定义校验规则
-  const tmNameValidator = (rule: any, value: any, callback: any) => {
+  const tmNameValidator = (_rule: any, value: any, callback: any) => {
     if (value.trim().length >= 2) {
       callback()
     } else {
@@ -122,7 +122,7 @@
     }
   }
   // 上传图片的自定义校验规则
-  const logoUrlValidator = (rule: any, value: any, callback: any) => {
+  const logoUrlValidator = (_rule: any, value: any, callback: any) => {
     if (value) {
       callback()
     } else {

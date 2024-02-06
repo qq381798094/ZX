@@ -53,7 +53,7 @@
   const $route = useRoute()
 
   // 仓库实例化
-  let userSotre = useUserStore()
+  let userStore = useUserStore()
 
   /** 收集账号与密码的数据 */
   let loginForm = reactive({
@@ -65,7 +65,7 @@
   // 表单 ref 获取
   const loginFormRefs = ref()
   // 自定义 username 校验规则
-  const validatorUserName = (rule: any, value: any, callback: any) => {
+  const validatorUserName = (_rule: any, value: any, callback: any) => {
     if (/^\w{5,10}$/.test(value)) {
       callback()
     } else {
@@ -73,7 +73,7 @@
     }
   }
   // 自定义 password 校验规则
-  const validatorPassword = (rule: any, value: any, callback: any) => {
+  const validatorPassword = (_rule: any, value: any, callback: any) => {
     if (value.length >= 5) {
       callback()
     } else {
@@ -99,7 +99,7 @@
     // 2. 成功 -> 跳转到首页
     // 3. 失败 -> 弹出相应错误信息
     try {
-      await userSotre.loginStatus(loginForm)
+      await userStore.loginStatus(loginForm)
       // 跳转到首页或者是其他页面
       $router.push(($route.query.redirect as string) || '/')
       ElNotification({
