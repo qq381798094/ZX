@@ -4,11 +4,22 @@
     <el-card class="card-form">
       <el-form class="form-class" inline>
         <el-form-item label="角色名称">
-          <el-input placeholder="角色名称" />
+          <el-input
+            @blur="handleSearchRoleList"
+            v-model="searchValue"
+            placeholder="角色名称"
+            clearable
+          />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button type="primary" plain>重置</el-button>
+          <el-button
+            @click="handleSearchRoleList"
+            type="primary"
+            :disabled="searchValue.length > 0 ? false : true"
+          >
+            搜索
+          </el-button>
+          <el-button @click="handleResetComponent" type="primary" plain>重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -67,6 +78,8 @@
 <script setup lang="ts">
   /** API */
   import { ref, onMounted } from 'vue'
+  /** 仓库引入 */
+  import useLayoutStore from '@/store/modules/layout'
   /** 接口引入 */
   import { requestRoleListByPageAPI } from '@/api/acl/role'
   /** 接口类型引入 */
@@ -74,6 +87,9 @@
   /** EL 组件引入 */
   import { Plus, User, Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+
+  /** 仓库实例化 */
+  const layoutStore = useLayoutStore()
 
   /** 页面挂载后执行 */
   onMounted(() => {
@@ -90,6 +106,16 @@
 
   /** 搜索框相关 */
   const searchValue = ref<string>('')
+  const handleSearchRoleList = () => {
+    try {
+      fetchRoleList()
+    } catch (e) {
+      ElMessage.error('获取数据失败，请重试')
+    }
+  }
+  const handleResetComponent = () => {
+    layoutStore.refreshRetreat()
+  }
 
   /** 分页器相关 */
   const pageNo = ref<number>(1)
