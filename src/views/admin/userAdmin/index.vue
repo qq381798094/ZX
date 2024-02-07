@@ -120,17 +120,17 @@
             >
               全选
             </el-checkbox>
-            <el-checkbox-group v-model="hasDataList" @change="handleCheckedJobsChange">
-              <el-checkbox v-for="item in dataList" :key="item" :label="item">
-                x{{ item }}
+            <el-checkbox-group v-model="hasJobList" @change="handleCheckedJobsChange">
+              <el-checkbox v-for="job in allJobList" :key="job.id" :label="job">
+                {{ job.roleName }}
               </el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-form>
       </template>
       <template #footer>
-        <el-button>取消</el-button>
-        <el-button type="primary">确定</el-button>
+        <el-button @click="drawerCancel">取消</el-button>
+        <el-button @click="jobDrawerConfirm" type="primary">确定</el-button>
       </template>
     </el-drawer>
   </div>
@@ -138,11 +138,15 @@
 
 <script setup lang="ts">
   /** API */
-  import { ref, reactive, onMounted, nextTick } from 'vue'
+  import { ref, reactive, onMounted, nextTick, computed } from 'vue'
   /** 接口引入 */
-  import { requestUserListByPageAPI, requestAddOrUpdateUserAPI } from '@/api/acl/user'
+  import {
+    requestUserListByPageAPI,
+    requestAddOrUpdateUserAPI,
+    requestJobsByUserAPI,
+  } from '@/api/acl/user'
   /** 接口类型引入 */
-  import type { UserListItem } from '@/api/acl/user/type'
+  import type { UserListItem, RoleItem } from '@/api/acl/user/type'
   /** EL 组件引入 */
   import { User, Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
@@ -183,10 +187,18 @@
 
   /** 【表格内】操作表格数据相关 */
   // 【分配角色】 @click
-  const handleDistributeJob = (item: UserListItem) => {
+  const handleDistributeJob = async (item: UserListItem) => {
     // 开抽屉
     distributeJobDrawer.value = true
     Object.assign(userInfoParams, item)
+    // 获取职业数据
+    try {
+      const { assignRoles, allRolesList } = await fetchJobList(item.id!)
+      allJobList.value = allRolesList
+      hasJobList.value = assignRoles
+    } catch (e) {
+      ElMessage.error('获取数据失败')
+    }
   }
   // 【编辑|更新】 @click
   const handleEditUserInfo = (item: UserListItem) => {
@@ -211,20 +223,26 @@
   const distributeJobDrawer = ref<boolean>(false)
 
   /** 角色分配抽屉相关 */
-  const dataList = ref<string[]>(['1', '2', '3', '4', '5', '6'])
-  const hasDataList = ref<string[]>([])
+  const allJobList = ref<RoleItem[]>([])
+  const hasJobList = ref<RoleItem[]>([])
   const distributeCheckAll = ref<boolean>(false)
-  const isIndeterminate = ref<boolean>(true)
+  const isIndeterminate = computed(() => {
+    if (hasJobList.value.length > 0 && hasJobList.value.length < allJobList.value.length) {
+      return true
+    } else {
+      return false
+    }
+  })
   // checkbox all-check -> @change
   const handleCheckAllChange = (val: boolean) => {
-    hasDataList.value = val ? dataList.value : []
-    isIndeterminate.value = false
+    hasJobList.value = val ? allJobList.value : []
   }
   // checkbox-group -> @change
-  const handleCheckedJobsChange = (values: string[]) => {
-    distributeCheckAll.value = values.length === dataList.value.length
-    isIndeterminate.value = values.length > 0 && values.length < dataList.value.length
+  const handleCheckedJobsChange = (values: RoleItem[]) => {
+    distributeCheckAll.value = values.length === allJobList.value.length
   }
+  // confirm button -> @click
+  const jobDrawerConfirm = () => {}
 
   /** 表单抽屉【内部】相关 */
   const drawerFormRef = ref<FormInstance>()
@@ -260,6 +278,7 @@
   // 表单操作相关
   const drawerCancel = () => {
     userFormDrawer.value = false
+    distributeJobDrawer.value = false
   }
   const drawerConfirm = async () => {
     try {
@@ -293,6 +312,17 @@
       return Promise.reject(new Error('数据获取失败'))
     }
   }
+  // 获取当前用户的岗位数据
+  const fetchJobList = async (adminId: number) => {
+    const result = await requestJobsByUserAPI(adminId)
+    const { code, data } = result
+    if (code === 200) {
+      return data
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // 添加 | 更新用户信息
   const addOrUpdateUserInfo = async (data: UserListItem) => {
     const result = await requestAddOrUpdateUserAPI(data)
     const { code } = result

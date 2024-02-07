@@ -32,3 +32,17 @@ export type UserListObject = {
   pages: number
 }
 export type UserListResponseData = UserManageResponseData<UserListObject>
+
+// 根据用户获取角色数据
+export type RoleItem = {
+  id?: number
+  createTime?: string
+  updateTime?: string
+  roleName: string
+  remark: null
+}
+export type JobListObject = {
+  assignRoles: RoleItem[]
+  allRolesList: RoleItem[]
+}
+export type JobListResponseData = UserManageResponseData<JobListObject>
