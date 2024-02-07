@@ -52,7 +52,9 @@
         />
         <el-table-column label="操作" width="270" align="center">
           <template #default="{ row }">
-            <el-button :icon="User" type="primary" size="small">分配角色</el-button>
+            <el-button @click="handleDistributeJob(row)" :icon="User" type="primary" size="small">
+              分配角色
+            </el-button>
             <el-button @click="handleEditUserInfo(row)" :icon="Edit" type="warning" size="small">
               编辑
             </el-button>
@@ -98,6 +100,37 @@
       <template #footer>
         <el-button @click="drawerCancel">取消</el-button>
         <el-button @click="drawerConfirm" type="primary">确定</el-button>
+      </template>
+    </el-drawer>
+    <!-- 分配用户岗位抽屉 -->
+    <el-drawer v-model="distributeJobDrawer">
+      <template #header>
+        <h4>分配角色用户 (职位)</h4>
+      </template>
+      <template #default>
+        <el-form label-width="80">
+          <el-form-item label="用户姓名">
+            <el-input v-model="userInfoParams.name" disabled />
+          </el-form-item>
+          <el-form-item label="角色列表">
+            <el-checkbox
+              v-model="distributeCheckAll"
+              :indeterminate="isIndeterminate"
+              @change="handleCheckAllChange"
+            >
+              全选
+            </el-checkbox>
+            <el-checkbox-group v-model="hasDataList" @change="handleCheckedJobsChange">
+              <el-checkbox v-for="item in dataList" :key="item" :label="item">
+                x{{ item }}
+              </el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-form>
+      </template>
+      <template #footer>
+        <el-button>取消</el-button>
+        <el-button type="primary">确定</el-button>
       </template>
     </el-drawer>
   </div>
@@ -149,6 +182,12 @@
   }
 
   /** 【表格内】操作表格数据相关 */
+  // 【分配角色】 @click
+  const handleDistributeJob = (item: UserListItem) => {
+    // 开抽屉
+    distributeJobDrawer.value = true
+    Object.assign(userInfoParams, item)
+  }
   // 【编辑|更新】 @click
   const handleEditUserInfo = (item: UserListItem) => {
     // 开抽屉、存原有数据参数、清表单验证
@@ -169,8 +208,25 @@
 
   /** 抽屉相关 */
   const userFormDrawer = ref<boolean>(false)
+  const distributeJobDrawer = ref<boolean>(false)
 
-  /** 抽屉【内部】表单相关 */
+  /** 角色分配抽屉相关 */
+  const dataList = ref<string[]>(['1', '2', '3', '4', '5', '6'])
+  const hasDataList = ref<string[]>([])
+  const distributeCheckAll = ref<boolean>(false)
+  const isIndeterminate = ref<boolean>(true)
+  // checkbox all-check -> @change
+  const handleCheckAllChange = (val: boolean) => {
+    hasDataList.value = val ? dataList.value : []
+    isIndeterminate.value = false
+  }
+  // checkbox-group -> @change
+  const handleCheckedJobsChange = (values: string[]) => {
+    distributeCheckAll.value = values.length === dataList.value.length
+    isIndeterminate.value = values.length > 0 && values.length < dataList.value.length
+  }
+
+  /** 表单抽屉【内部】相关 */
   const drawerFormRef = ref<FormInstance>()
   // 表单校验相关
   const validateUserName = (_rule: any, value: string, callback: any) => {
