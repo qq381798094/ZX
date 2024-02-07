@@ -17,12 +17,30 @@
       <!-- 添加角色 -->
       <el-button :icon="Plus" type="primary">添加角色</el-button>
       <!-- 表格 -->
-      <el-table :data="[{}, {}, {}]" class="table-box" border stripe>
+      <el-table :data="roleList" class="table-box" border stripe>
         <el-table-column label="#" width="100" type="index" align="center" />
-        <el-table-column label="id" width="120" align="center" />
-        <el-table-column label="角色名称" width="220" align="center" show-overflow-tooltip />
-        <el-table-column label="创建时间" width="220" align="center" show-overflow-tooltip />
-        <el-table-column label="更新时间" width="220" align="center" show-overflow-tooltip />
+        <el-table-column prop="id" label="id" width="120" align="center" />
+        <el-table-column
+          prop="roleName"
+          label="角色名称"
+          width="220"
+          align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="createTime"
+          label="创建时间"
+          width="220"
+          align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="updateTime"
+          label="更新时间"
+          width="220"
+          align="center"
+          show-overflow-tooltip
+        />
         <el-table-column label="操作" align="center">
           <template #default>
             <el-button :icon="User" type="primary" size="small">权限分配</el-button>
@@ -39,6 +57,8 @@
         background
         layout="prev, pager, next, jumper,->,sizes, total"
         :total="totalData"
+        @current-change="fetchRoleList"
+        @size-change="handleSizeChange"
       />
     </el-card>
   </div>
@@ -46,14 +66,65 @@
 
 <script setup lang="ts">
   /** API */
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
+  /** 接口引入 */
+  import { requestRoleListByPageAPI } from '@/api/acl/role'
+  /** 接口类型引入 */
+  import type { RoleListItem } from '@/api/acl/role/type'
   /** EL 组件引入 */
   import { Plus, User, Edit, Delete } from '@element-plus/icons-vue'
+  import { ElMessage } from 'element-plus'
+
+  /** 页面挂载后执行 */
+  onMounted(() => {
+    // 初始化数据
+    try {
+      fetchRoleList()
+    } catch (e) {
+      ElMessage.error('数据初始化失败')
+    }
+  })
+
+  /** 表格数据存储相关 */
+  const roleList = ref<RoleListItem[]>([])
+
+  /** 搜索框相关 */
+  const searchValue = ref<string>('')
 
   /** 分页器相关 */
   const pageNo = ref<number>(1)
   const pageSize = ref<number>(10)
   const totalData = ref<number>(30)
+  const handleSizeChange = () => {
+    try {
+      fetchRoleList()
+    } catch (e) {
+      ElMessage.error('获取数据失败，请重试')
+    }
+  }
+
+  /** 请求方法相关 */
+  // 获取角色分页列表
+  const fetchRoleList = async (pager = 1) => {
+    // 修改当前页码
+    pageNo.value = pager
+    // 发请求
+    const result = await requestRoleListByPageAPI(pageNo.value, pageSize.value, searchValue.value)
+    const { code, data } = result
+    if (code === 200) {
+      const { records, total } = data
+      totalData.value = total
+      roleList.value = records
+      return data
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+</script>
+<script lang="ts">
+  export default {
+    name: 'RoleManage',
+  }
 </script>
 
 <style scoped lang="scss">
