@@ -22,6 +22,10 @@ enum API {
   GET_JOBS_BY_USER__URL = '/admin/acl/user/toAssign/',
   // 根据用户分配角色
   POST_ASSIGN_ROLE_BY_USER__URL = '/admin/acl/user/doAssignRole',
+  // 删除管理用户【一个】
+  DELETE_USER_BU_ID__URL = '/admin/acl/user/remove/',
+  // 根据id列表删除管理用户【多个】
+  DELETE_USERS_BY_IDS__URL = '/admin/acl/user/batchRemove',
 }
 
 // 获取管理用户分页列表【根据分页】
@@ -44,3 +48,13 @@ export const requestJobsByUserAPI = (adminId: number) =>
 // 根据用户分配角色
 export const requestAssignJobByUserAPI = (data: AssignJobsParams) =>
   request.post<any, UserManageResponseData<string | null>>(API.POST_ASSIGN_ROLE_BY_USER__URL, data)
+
+// 删除管理用户【一个】
+export const requestDelUserByIdAPI = (id: number) =>
+  request.delete<any, UserManageResponseData<string | null>>(API.DELETE_USER_BU_ID__URL + id)
+
+// 根据id列表删除管理用户【多个】
+export const requestDelUsersByIdListAPI = (idList: number[]) =>
+  request.delete<any, UserManageResponseData<string | null>>(API.DELETE_USERS_BY_IDS__URL, {
+    data: idList,
+  })

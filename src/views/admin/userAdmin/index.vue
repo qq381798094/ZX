@@ -15,9 +15,15 @@
     <!-- 列表展示 卡片 -->
     <el-card class="show-card">
       <el-button @click="handleAddUserData" type="primary">添加</el-button>
-      <el-button type="danger">批量删除</el-button>
+      <el-button
+        @click="handleDelUsersData"
+        type="danger"
+        :disabled="delUserList.length > 0 ? false : true"
+      >
+        批量删除
+      </el-button>
       <!-- 表格 -->
-      <el-table :data="userList" class="table-box" border>
+      <el-table :data="userList" class="table-box" border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="70" align="center" />
         <el-table-column label="#" type="index" width="80" align="center" />
         <el-table-column label="id" prop="id" width="80" align="center" />
@@ -58,7 +64,15 @@
             <el-button @click="handleEditUserInfo(row)" :icon="Edit" type="warning" size="small">
               编辑
             </el-button>
-            <el-button :icon="Delete" type="danger" size="small">删除</el-button>
+            <el-popconfirm
+              :title="`你确定要删除用户${row.username}吗？`"
+              width="260px"
+              @confirm="handleDeleteUser(row)"
+            >
+              <template #reference>
+                <el-button :icon="Delete" type="danger" size="small">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -145,6 +159,8 @@
     requestAddOrUpdateUserAPI,
     requestJobsByUserAPI,
     requestAssignJobByUserAPI,
+    requestDelUserByIdAPI,
+    requestDelUsersByIdListAPI,
   } from '@/api/acl/user'
   /** 接口类型引入 */
   import type { UserListItem, RoleItem, AssignJobsParams } from '@/api/acl/user/type'
@@ -169,6 +185,13 @@
     password: '',
     username: '',
   })
+  const delUserList = ref<UserListItem[]>([])
+
+  /** 表格相关 */
+  // 当选择项发生变化时会触发该事件
+  const handleSelectionChange = (val: UserListItem[]) => {
+    delUserList.value = val
+  }
 
   /** 【表格外】操作表格数据相关 */
   // 添加用户按钮 @click
@@ -184,6 +207,18 @@
     nextTick(() => {
       drawerFormRef.value!.clearValidate()
     })
+  }
+  // 【批量删除】 @click
+  const handleDelUsersData = async () => {
+    let delParams: number[] = delUserList.value.map((item) => item.id!)
+    // 获取请求数据
+    try {
+      await deleteUsers(delParams)
+      ElMessage.success('操作成功')
+      await fetchUserList(userList.value.length > 0 ? pageNo.value : pageNo.value - 1)
+    } catch (e) {
+      ElMessage.error('操作取消或发生异常')
+    }
   }
 
   /** 【表格内】操作表格数据相关 */
@@ -209,6 +244,17 @@
     })
     userFormDrawer.value = true
     Object.assign(userInfoParams, item)
+  }
+  // 【删除】 @click
+  const handleDeleteUser = async (item: UserListItem) => {
+    const { id } = item
+    try {
+      await deleteUser(id!)
+      ElMessage.success('操作成功')
+      fetchUserList(userList.value.length > 1 ? pageNo.value : pageNo.value - 1)
+    } catch (e) {
+      ElMessage.error('操作失败')
+    }
   }
 
   /** 分页器相关 */
@@ -351,6 +397,26 @@
   // 添加 | 更新用户的岗位信息
   const assignJobsByUser = async (data: AssignJobsParams) => {
     const result = await requestAssignJobByUserAPI(data)
+    const { code } = result
+    if (code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // 删除用户【一个】
+  const deleteUser = async (id: number) => {
+    const result = await requestDelUserByIdAPI(id)
+    const { code } = result
+    if (code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // 删除用户【多个】
+  const deleteUsers = async (idList: number[]) => {
+    const result = await requestDelUsersByIdListAPI(idList)
     const { code } = result
     if (code === 200) {
       return 'ok'
