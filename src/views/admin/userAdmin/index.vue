@@ -4,11 +4,22 @@
     <el-card class="form-card">
       <el-form class="form-box" inline>
         <el-form-item label="用户名：">
-          <el-input placeholder="请输入用户名" />
+          <el-input
+            @blur="handleSearchList"
+            v-model="searchValue"
+            placeholder="请输入用户名"
+            clearable
+          />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>重置</el-button>
+          <el-button
+            @click="handleSearchList"
+            type="primary"
+            :disabled="searchValue.length > 0 ? false : true"
+          >
+            搜索
+          </el-button>
+          <el-button @click="handleResetTable">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -164,10 +175,15 @@
   } from '@/api/acl/user'
   /** 接口类型引入 */
   import type { UserListItem, RoleItem, AssignJobsParams } from '@/api/acl/user/type'
+  /** 仓库引入 */
+  import useLayoutStore from '@/store/modules/layout'
   /** EL 组件引入 */
   import { User, Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import type { FormRules, FormInstance } from 'element-plus'
+
+  /** 实例化仓库 */
+  const layoutStore = useLayoutStore()
 
   /** 组件挂载成功后触发 */
   onMounted(() => {
@@ -186,6 +202,19 @@
     username: '',
   })
   const delUserList = ref<UserListItem[]>([])
+
+  /** 顶部搜索相关 */
+  const searchValue = ref<string>('')
+  const handleSearchList = () => {
+    try {
+      fetchUserList()
+    } catch (e) {
+      ElMessage.error('获取数据失败')
+    }
+  }
+  const handleResetTable = () => {
+    layoutStore.refreshRetreat()
+  }
 
   /** 表格相关 */
   // 当选择项发生变化时会触发该事件
@@ -363,7 +392,7 @@
     // 收集当前页码
     pageNo.value = pager
     // 发送请求
-    const result = await requestUserListByPageAPI(pageNo.value, pageSize.value)
+    const result = await requestUserListByPageAPI(pageNo.value, pageSize.value, searchValue.value)
     const { code, data } = result
     if (code === 200) {
       const { total, records } = data

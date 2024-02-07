@@ -29,8 +29,10 @@ enum API {
 }
 
 // 获取管理用户分页列表【根据分页】
-export const requestUserListByPageAPI = (page: number, limit: number) =>
-  request.get<any, UserListResponseData>(API.GET_USER_LIST_BY_PAGE__URL + `${page}/${limit}`)
+export const requestUserListByPageAPI = (page: number, limit: number, username: string) =>
+  request.get<any, UserListResponseData>(
+    API.GET_USER_LIST_BY_PAGE__URL + `${page}/${limit}/?username=${username}`,
+  )
 
 // 添加 or 修改用户信息
 export const requestAddOrUpdateUserAPI = (data: UserListItem) => {
