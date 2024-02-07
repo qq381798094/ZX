@@ -7,6 +7,7 @@ import type {
   UserListItem,
   UserManageResponseData,
   JobListResponseData,
+  AssignJobsParams,
 } from './type'
 
 /** 接口地址枚举 */
@@ -19,6 +20,8 @@ enum API {
   PUT_UPDATE_USER__URL = '/admin/acl/user/update',
   // 根据用户获取角色数据
   GET_JOBS_BY_USER__URL = '/admin/acl/user/toAssign/',
+  // 根据用户分配角色
+  POST_ASSIGN_ROLE_BY_USER__URL = '/admin/acl/user/doAssignRole',
 }
 
 // 获取管理用户分页列表【根据分页】
@@ -37,3 +40,7 @@ export const requestAddOrUpdateUserAPI = (data: UserListItem) => {
 // 根据用户获取角色数据
 export const requestJobsByUserAPI = (adminId: number) =>
   request.get<any, JobListResponseData>(API.GET_JOBS_BY_USER__URL + adminId)
+
+// 根据用户分配角色
+export const requestAssignJobByUserAPI = (data: AssignJobsParams) =>
+  request.post<any, UserManageResponseData<string | null>>(API.POST_ASSIGN_ROLE_BY_USER__URL, data)

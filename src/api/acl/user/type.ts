@@ -46,3 +46,9 @@ export type JobListObject = {
   allRolesList: RoleItem[]
 }
 export type JobListResponseData = UserManageResponseData<JobListObject>
+
+// 根据用户分配角色 【参数】
+export type AssignJobsParams = {
+  userId: number
+  roleIdList: number[]
+}

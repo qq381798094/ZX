@@ -144,9 +144,10 @@
     requestUserListByPageAPI,
     requestAddOrUpdateUserAPI,
     requestJobsByUserAPI,
+    requestAssignJobByUserAPI,
   } from '@/api/acl/user'
   /** 接口类型引入 */
-  import type { UserListItem, RoleItem } from '@/api/acl/user/type'
+  import type { UserListItem, RoleItem, AssignJobsParams } from '@/api/acl/user/type'
   /** EL 组件引入 */
   import { User, Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
@@ -241,8 +242,23 @@
   const handleCheckedJobsChange = (values: RoleItem[]) => {
     distributeCheckAll.value = values.length === allJobList.value.length
   }
-  // confirm button -> @click
-  const jobDrawerConfirm = () => {}
+  // 抽屉确定 button -> @click
+  const jobDrawerConfirm = async () => {
+    // 整理已选择的岗位参数
+    let params: AssignJobsParams = {
+      userId: userInfoParams.id!,
+      roleIdList: hasJobList.value.map((item) => item.id) as number[],
+    }
+    // 发请求
+    try {
+      await assignJobsByUser(params)
+      ElMessage.success('操作成功')
+      await fetchUserList(pageNo.value)
+      distributeJobDrawer.value = false
+    } catch (e) {
+      ElMessage.error('修改失败，请重试')
+    }
+  }
 
   /** 表单抽屉【内部】相关 */
   const drawerFormRef = ref<FormInstance>()
@@ -325,6 +341,16 @@
   // 添加 | 更新用户信息
   const addOrUpdateUserInfo = async (data: UserListItem) => {
     const result = await requestAddOrUpdateUserAPI(data)
+    const { code } = result
+    if (code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // 添加 | 更新用户的岗位信息
+  const assignJobsByUser = async (data: AssignJobsParams) => {
+    const result = await requestAssignJobByUserAPI(data)
     const { code } = result
     if (code === 200) {
       return 'ok'
