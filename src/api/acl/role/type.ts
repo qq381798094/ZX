@@ -28,3 +28,20 @@ export type RoleListDataObject = {
   pages: number
 }
 export type RoleListResponseData = RoleManageResponseData<RoleListDataObject>
+
+// 根据角色获取菜单
+export type RoleMenuListDataItem = {
+  id: number
+  createTime: string
+  updateTime: string
+  pid: number
+  name: string
+  code: null | string
+  toCode: null | string
+  type: number
+  status: null
+  level: number
+  children: RoleMenuListDataItem[] | []
+  select: boolean
+}
+export type RoleMenuListResponseData = RoleManageResponseData<RoleMenuListDataItem>

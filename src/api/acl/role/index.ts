@@ -2,7 +2,12 @@
 import request from '@/utils/request'
 
 /** 类型引入 */
-import type { RoleListResponseData, RoleListItem, RoleManageResponseData } from './type'
+import type {
+  RoleListResponseData,
+  RoleListItem,
+  RoleManageResponseData,
+  RoleMenuListResponseData,
+} from './type'
 
 /** 接口地址枚举 */
 enum API {
@@ -12,6 +17,8 @@ enum API {
   POST_ADD_ROLE__URL = '/admin/acl/role/save',
   // 修改角色
   PUT_UPDATE_ROLE__URL = '/admin/acl/role/update',
+  // 根据角色获取菜单
+  GET_MENU_LIST_BY_ID__URL = '/admin/acl/permission/toAssign/',
 }
 
 // 获取角色分页列表
@@ -29,3 +36,7 @@ export const requestAddOrUpdateRoleInfoAPI = (data: RoleListItem) => {
     return request.post<any, RoleManageResponseData<string | null>>(API.POST_ADD_ROLE__URL, data)
   }
 }
+
+// 根据角色获取菜单
+export const requestMenuListByIdAPI = (roleId: number) =>
+  request.get<any, RoleMenuListResponseData>(API.GET_MENU_LIST_BY_ID__URL + roleId)
