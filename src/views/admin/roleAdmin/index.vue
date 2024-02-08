@@ -54,7 +54,9 @@
         />
         <el-table-column label="操作" align="center">
           <template #default="{ row }">
-            <el-button :icon="User" type="primary" size="small">权限分配</el-button>
+            <el-button @click="handlePowerDistribute(row)" :icon="User" type="primary" size="small">
+              权限分配
+            </el-button>
             <el-button @click="handleRoleInfo(row)" :icon="Edit" type="warning" size="small">
               编辑
             </el-button>
@@ -75,32 +77,49 @@
       />
     </el-card>
     <!-- 【添加|更新角色】对话框 -->
-    <el-dialog v-model="handleRoleDialogVisible" title="添加">
-      <el-form>
-        <el-form-item label="角色名称">
-          <el-input placeholder="请填写角色名称" />
+    <el-dialog
+      v-model="handleRoleDialogVisible"
+      :title="roleInfoParams.id ? '修改角色名称' : '添加角色名称'"
+    >
+      <el-form ref="roleFormRef" :model="roleInfoParams" :rules="rules">
+        <el-form-item prop="roleName" label="角色名称">
+          <el-input v-model="roleInfoParams.roleName" placeholder="请填写角色名称" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button>取消</el-button>
-        <el-button type="primary">确定</el-button>
+        <el-button @click="handleRoleDialogVisible = false">取消</el-button>
+        <el-button @click="handleDialogConfirm" type="primary">确定</el-button>
       </template>
     </el-dialog>
+    <!-- 【分配权限】抽屉 -->
+    <el-drawer v-model="powerDrawerVisible">
+      <template #header>
+        <h6>分配权限</h6>
+      </template>
+      <template #default>
+        <!-- 树形控件 -->
+        <el-tree :data="treeData" show-checkbox node-key="id" default-expand-all />
+      </template>
+      <template #footer>
+        <el-button @click="powerDrawerVisible = false">取消</el-button>
+        <el-button @click="handlePowerDrawerConfirm" type="primary">确定</el-button>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
   /** API */
-  import { ref, onMounted, reactive } from 'vue'
+  import { ref, onMounted, reactive, nextTick } from 'vue'
   /** 仓库引入 */
   import useLayoutStore from '@/store/modules/layout'
   /** 接口引入 */
-  import { requestRoleListByPageAPI } from '@/api/acl/role'
+  import { requestRoleListByPageAPI, requestAddOrUpdateRoleInfoAPI } from '@/api/acl/role'
   /** 接口类型引入 */
   import type { RoleListItem } from '@/api/acl/role/type'
   /** EL 组件引入 */
   import { Plus, User, Edit, Delete } from '@element-plus/icons-vue'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, FormInstance, FormRules } from 'element-plus'
 
   /** 仓库实例化 */
   const layoutStore = useLayoutStore()
@@ -117,6 +136,9 @@
 
   /** 表格数据存储相关 */
   const roleList = ref<RoleListItem[]>([])
+  const roleInfoParams = reactive<RoleListItem>({
+    roleName: '',
+  })
 
   /** 搜索框相关 */
   const searchValue = ref<string>('')
@@ -132,15 +154,29 @@
   }
 
   /** 操作表格数据相关 */
-  // 新增角色
+  // 【权限分配】按钮 -> @click
+  const handlePowerDistribute = (item: RoleListItem) => {
+    powerDrawerVisible.value = true
+  }
+  // 【新增|更新角色】按钮 -> @click
   const handleRoleInfo = (item: RoleListItem) => {
+    // 清空数据 | 校验结果
+    Object.assign(roleInfoParams, {
+      id: undefined,
+      createTime: undefined,
+      updateTime: undefined,
+      roleName: '',
+      remark: undefined,
+    })
+    nextTick(() => {
+      roleFormRef.value!.clearValidate()
+    })
     const { id } = item
     if (id) {
       // 修改
-      console.log('update')
+      Object.assign(roleInfoParams, item)
     } else {
       // 新增
-      console.log('create')
     }
     // 打开对话框
     handleRoleDialogVisible.value = true
@@ -160,6 +196,52 @@
 
   /** 【更新|添加角色】对话框相关 */
   const handleRoleDialogVisible = ref<boolean>(false)
+  // 【确定】button -> @click
+  const handleDialogConfirm = async () => {
+    try {
+      await roleFormRef.value!.validate()
+      // 发请求
+      await changeAddOrUpdateRoleInfo(roleInfoParams)
+      ElMessage.success(roleInfoParams.id ? '成功修改角色信息' : '成功新增岗位')
+      await fetchRoleList(pageNo.value)
+      handleRoleDialogVisible.value = false
+    } catch (e) {
+      ElMessage.error('操作失败，请重试')
+    }
+  }
+  // 表单校验
+  const roleFormRef = ref<FormInstance>()
+  const validatorRoleName = (_rule: any, value: string, callback: any) => {
+    if (value.trim().length >= 2) {
+      callback()
+    } else {
+      callback(new Error('角色名称至少要2位'))
+    }
+  }
+  const rules = reactive<FormRules<typeof roleInfoParams>>({
+    roleName: [{ required: true, validator: validatorRoleName, trigger: 'blur' }],
+  })
+
+  /** 【分配权限】抽屉相关 */
+  const powerDrawerVisible = ref<boolean>(false)
+  const handlePowerDrawerConfirm = () => {}
+  // 内部树形控件相关
+  const treeData = [
+    {
+      id: 1,
+      label: 'one',
+      children: [
+        {
+          id: 11,
+          label: 'one-one',
+        },
+        {
+          id: 12,
+          label: 'one-two',
+        },
+      ],
+    },
+  ]
 
   /** 请求方法相关 */
   // 获取角色分页列表
@@ -177,6 +259,11 @@
     } else {
       return Promise.reject(new Error('失败'))
     }
+  }
+  // 【新增|修改】角色
+  const changeAddOrUpdateRoleInfo = async (data: RoleListItem) => {
+    const result = await requestAddOrUpdateRoleInfoAPI(data)
+    console.log(result)
   }
 </script>
 <script lang="ts">
