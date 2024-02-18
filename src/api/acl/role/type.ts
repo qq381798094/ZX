@@ -44,4 +44,4 @@ export type RoleMenuListDataItem = {
   children: RoleMenuListDataItem[] | []
   select: boolean
 }
-export type RoleMenuListResponseData = RoleManageResponseData<RoleMenuListDataItem>
+export type RoleMenuListResponseData = RoleManageResponseData<RoleMenuListDataItem[]>

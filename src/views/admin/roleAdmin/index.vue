@@ -98,7 +98,13 @@
       </template>
       <template #default>
         <!-- 树形控件 -->
-        <el-tree :data="treeData" show-checkbox node-key="id" default-expand-all />
+        <el-tree
+          :data="permissionMenuList"
+          :props="permissionProps"
+          show-checkbox
+          node-key="id"
+          default-expand-all
+        />
       </template>
       <template #footer>
         <el-button @click="powerDrawerVisible = false">取消</el-button>
@@ -114,9 +120,13 @@
   /** 仓库引入 */
   import useLayoutStore from '@/store/modules/layout'
   /** 接口引入 */
-  import { requestRoleListByPageAPI, requestAddOrUpdateRoleInfoAPI } from '@/api/acl/role'
+  import {
+    requestRoleListByPageAPI,
+    requestAddOrUpdateRoleInfoAPI,
+    requestMenuListByIdAPI,
+  } from '@/api/acl/role'
   /** 接口类型引入 */
-  import type { RoleListItem } from '@/api/acl/role/type'
+  import type { RoleListItem, RoleMenuListDataItem } from '@/api/acl/role/type'
   /** EL 组件引入 */
   import { Plus, User, Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage, FormInstance, FormRules } from 'element-plus'
@@ -139,6 +149,7 @@
   const roleInfoParams = reactive<RoleListItem>({
     roleName: '',
   })
+  const permissionMenuList = ref<RoleMenuListDataItem[]>([]) // 权限菜单列表
 
   /** 搜索框相关 */
   const searchValue = ref<string>('')
@@ -155,7 +166,16 @@
 
   /** 操作表格数据相关 */
   // 【权限分配】按钮 -> @click
-  const handlePowerDistribute = (item: RoleListItem) => {
+  const handlePowerDistribute = async (item: RoleListItem) => {
+    try {
+      // 拿到数据
+      const { id } = item
+      permissionMenuList.value = await fetchPermissionMenuList(id!)
+    } catch (e) {
+      ElMessage.error('数据获取出错，请重试')
+    }
+
+    // 展示抽屉
     powerDrawerVisible.value = true
   }
   // 【新增|更新角色】按钮 -> @click
@@ -225,23 +245,11 @@
   /** 【分配权限】抽屉相关 */
   const powerDrawerVisible = ref<boolean>(false)
   const handlePowerDrawerConfirm = () => {}
-  // 内部树形控件相关
-  const treeData = [
-    {
-      id: 1,
-      label: 'one',
-      children: [
-        {
-          id: 11,
-          label: 'one-one',
-        },
-        {
-          id: 12,
-          label: 'one-two',
-        },
-      ],
-    },
-  ]
+  // tree 组件相关
+  const permissionProps = {
+    children: 'children',
+    label: 'name',
+  }
 
   /** 请求方法相关 */
   // 获取角色分页列表
@@ -255,6 +263,16 @@
       const { records, total } = data
       totalData.value = total
       roleList.value = records
+      return data
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // 【角色分配】获取树形菜单
+  const fetchPermissionMenuList = async (roleId: number) => {
+    const result = await requestMenuListByIdAPI(roleId)
+    const { code, data } = result
+    if (code === 200) {
       return data
     } else {
       return Promise.reject(new Error('失败'))
