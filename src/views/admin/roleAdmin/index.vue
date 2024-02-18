@@ -99,11 +99,13 @@
       <template #default>
         <!-- 树形控件 -->
         <el-tree
+          ref="treeRef"
           :data="permissionMenuList"
           :props="permissionProps"
           show-checkbox
           node-key="id"
           default-expand-all
+          :default-checked-keys="defaultChecked"
         />
       </template>
       <template #footer>
@@ -124,12 +126,13 @@
     requestRoleListByPageAPI,
     requestAddOrUpdateRoleInfoAPI,
     requestMenuListByIdAPI,
+    requestDistributePermissionAPI,
   } from '@/api/acl/role'
   /** 接口类型引入 */
   import type { RoleListItem, RoleMenuListDataItem } from '@/api/acl/role/type'
   /** EL 组件引入 */
   import { Plus, User, Edit, Delete } from '@element-plus/icons-vue'
-  import { ElMessage, FormInstance, FormRules } from 'element-plus'
+  import { ElMessage, ElTree, FormInstance, FormRules } from 'element-plus'
 
   /** 仓库实例化 */
   const layoutStore = useLayoutStore()
@@ -171,10 +174,12 @@
       // 拿到数据
       const { id } = item
       permissionMenuList.value = await fetchPermissionMenuList(id!)
+      Object.assign(roleInfoParams, item)
+      // 设置默认勾选的数据
+      defaultChecked.value = filterArray(permissionMenuList.value, [])
     } catch (e) {
       ElMessage.error('数据获取出错，请重试')
     }
-
     // 展示抽屉
     powerDrawerVisible.value = true
   }
@@ -244,11 +249,46 @@
 
   /** 【分配权限】抽屉相关 */
   const powerDrawerVisible = ref<boolean>(false)
-  const handlePowerDrawerConfirm = () => {}
-  // tree 组件相关
+  // 确认 button -> @click
+  const handlePowerDrawerConfirm = async () => {
+    const roleId = roleInfoParams.id
+    // 选中节点
+    let permissionIds = treeRef.value!.getCheckedKeys()
+    // 半选节点【可忽略】
+    // let halfCheckedNode = treeRef.value!.getHalfCheckedKeys()
+    // permissionIds
+    // let permissionIds = checkedNode
+    try {
+      await changeRoleToPermissionMenu(roleId!, permissionIds as number[])
+      ElMessage.success('操作成功')
+      powerDrawerVisible.value = false
+      window.location.reload()
+    } catch (e) {
+      ElMessage.error('请求失效')
+    }
+  }
+  // ==== tree 组件相关 ====
+  const treeRef = ref<InstanceType<typeof ElTree>>()
+  // 默认勾选数据
+  const defaultChecked = ref<number[]>([])
+  // id name 键值对
   const permissionProps = {
     children: 'children',
     label: 'name',
+  }
+
+  /** 工具方法相关 */
+  // 筛选出默认已默认勾选的数据
+  const filterArray = (dataList: RoleMenuListDataItem[], initData: number[]) => {
+    dataList.forEach((item) => {
+      if (item.select && item.level === 4) {
+        initData.push(item.id)
+      }
+      if (item.children && item.children.length > 0) {
+        filterArray(item.children, initData)
+      }
+    })
+    return initData
   }
 
   /** 请求方法相关 */
@@ -274,6 +314,16 @@
     const { code, data } = result
     if (code === 200) {
       return data
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
+  }
+  // 【角色分配】给当前角色分配权限菜单
+  const changeRoleToPermissionMenu = async (roleId: number, permissionIds: number[]) => {
+    const result = await requestDistributePermissionAPI(roleId, permissionIds)
+    const { code } = result
+    if (code === 200) {
+      return 'ok'
     } else {
       return Promise.reject(new Error('失败'))
     }
