@@ -21,6 +21,8 @@ enum API {
   GET_MENU_LIST_BY_ID__URL = '/admin/acl/permission/toAssign/',
   // 给角色分配权限
   POST_PERMISSION_ASSIGN___URL = '/admin/acl/permission/doAssign/?',
+  // 删除角色
+  REMOVE_ROLE_BY_ID__URL = '/admin/acl/role/remove/',
 }
 
 // 获取角色分页列表
@@ -48,3 +50,7 @@ export const requestDistributePermissionAPI = (roleId: number, permissionId: num
   request.post<any, RoleManageResponseData<string | null>>(
     API.POST_PERMISSION_ASSIGN___URL + `roleId=${roleId}&permissionId=${permissionId}`,
   )
+
+// 删除角色
+export const requestDeleteRoleByIdAPI = (id: number) =>
+  request.delete<any, RoleManageResponseData<string | null>>(API.REMOVE_ROLE_BY_ID__URL + id)

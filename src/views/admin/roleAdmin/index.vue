@@ -60,7 +60,15 @@
             <el-button @click="handleRoleInfo(row)" :icon="Edit" type="warning" size="small">
               编辑
             </el-button>
-            <el-button :icon="Delete" type="danger" size="small">删除</el-button>
+            <el-popconfirm
+              :title="`您确定要删除${row.roleName}吗？`"
+              @confirm="handleDeleteRole(row)"
+              width="220"
+            >
+              <template #reference>
+                <el-button :icon="Delete" type="danger" size="small">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -110,7 +118,7 @@
       </template>
       <template #footer>
         <el-button @click="powerDrawerVisible = false">取消</el-button>
-        <el-button @click="handlePowerDrawerConfirm" type="primary">确定</el-button>
+        <el-button @click="handlePermissionDrawerConfirm" type="primary">确定</el-button>
       </template>
     </el-drawer>
   </div>
@@ -127,6 +135,7 @@
     requestAddOrUpdateRoleInfoAPI,
     requestMenuListByIdAPI,
     requestDistributePermissionAPI,
+    requestDeleteRoleByIdAPI,
   } from '@/api/acl/role'
   /** 接口类型引入 */
   import type { RoleListItem, RoleMenuListDataItem } from '@/api/acl/role/type'
@@ -185,6 +194,7 @@
   }
   // 【新增|更新角色】按钮 -> @click
   const handleRoleInfo = (item: RoleListItem) => {
+    const { id } = item
     // 清空数据 | 校验结果
     Object.assign(roleInfoParams, {
       id: undefined,
@@ -196,7 +206,6 @@
     nextTick(() => {
       roleFormRef.value!.clearValidate()
     })
-    const { id } = item
     if (id) {
       // 修改
       Object.assign(roleInfoParams, item)
@@ -205,6 +214,17 @@
     }
     // 打开对话框
     handleRoleDialogVisible.value = true
+  }
+  // 【删除角色】按钮 -> @click
+  const handleDeleteRole = async (item: RoleListItem) => {
+    const { id } = item
+    try {
+      await deleteRoleById(id!)
+      ElMessage.success('成功删除当前角色')
+      fetchRoleList(roleList.value.length > 1 ? pageNo.value : pageNo.value - 1)
+    } catch (e) {
+      ElMessage.error('操作请求失败，请重试')
+    }
   }
 
   /** 分页器相关 */
@@ -225,6 +245,11 @@
   const handleDialogConfirm = async () => {
     try {
       await roleFormRef.value!.validate()
+      // 排除相同角色名情况
+      if (roleList.value.some((item) => item.roleName === roleInfoParams.roleName)) {
+        ElMessage.error('不能重复添加已有角色')
+        return
+      }
       // 发请求
       await changeAddOrUpdateRoleInfo(roleInfoParams)
       ElMessage.success(roleInfoParams.id ? '成功修改角色信息' : '成功新增岗位')
@@ -250,7 +275,7 @@
   /** 【分配权限】抽屉相关 */
   const powerDrawerVisible = ref<boolean>(false)
   // 确认 button -> @click
-  const handlePowerDrawerConfirm = async () => {
+  const handlePermissionDrawerConfirm = async () => {
     const roleId = roleInfoParams.id
     // 选中节点
     let permissionIds = treeRef.value!.getCheckedKeys()
@@ -332,6 +357,16 @@
   const changeAddOrUpdateRoleInfo = async (data: RoleListItem) => {
     const result = await requestAddOrUpdateRoleInfoAPI(data)
     console.log(result)
+  }
+  // 【删除】角色
+  const deleteRoleById = async (id: number) => {
+    const result = await requestDeleteRoleByIdAPI(id)
+    const { code } = result
+    if (code === 200) {
+      return 'ok'
+    } else {
+      return Promise.reject(new Error('失败'))
+    }
   }
 </script>
 <script lang="ts">
