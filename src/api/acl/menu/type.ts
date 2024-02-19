@@ -22,3 +22,12 @@ export type MenuListDataItem = {
   select: boolean
 }
 export type MenuListResponseData = MenuManageResponseData<MenuListDataItem[]>
+
+// 添加|修改 菜单 --> 携带的参数
+export type MenuOptionParams = {
+  id?: number
+  code: string
+  level: number | undefined
+  name: string
+  pid: number | undefined
+}
