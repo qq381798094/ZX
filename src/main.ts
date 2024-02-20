@@ -8,6 +8,7 @@ import './permission'
 // 引入 Element-Plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 // 引入国际化
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
