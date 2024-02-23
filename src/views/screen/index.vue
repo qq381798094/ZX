@@ -13,7 +13,10 @@
           <Sex class="component-sex" />
           <Age class="component-age" />
         </div>
-        <div class="center">中间</div>
+        <div class="center">
+          <Map class="component-map" />
+          <Line class="component-line" />
+        </div>
         <div class="right">右侧</div>
       </div>
     </div>
@@ -28,6 +31,8 @@
   import Tourist from './component/bottomViews/tourist/index.vue'
   import Sex from './component/bottomViews/sex/index.vue'
   import Age from './component/bottomViews/age/index.vue'
+  import Map from './component/centerViews/map/index.vue'
+  import Line from './component/centerViews/line/index.vue'
 
   onMounted(() => {
     changeScale()
@@ -96,6 +101,16 @@
 
         .center {
           flex: 2;
+          display: flex;
+          flex-direction: column;
+
+          .component-map {
+            flex: 4;
+          }
+
+          .component-line {
+            flex: 1;
+          }
         }
 
         .right {

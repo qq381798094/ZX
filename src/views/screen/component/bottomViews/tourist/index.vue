@@ -15,15 +15,44 @@
       <span v-for="(item, index) in totalPeople" :key="index">{{ item }}</span>
     </div>
     <!-- 图标数据 -->
-    <div class="e-chart-data" ref=""></div>
+    <div class="e-chart-data" ref="chartRef"></div>
   </div>
 </template>
 
 <script setup lang="ts">
   /** API */
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   /** eCharts */
-  //   import * as echarts from 'echarts'
+  import * as ECharts from 'echarts'
+  import 'echarts-liquidfill'
+
+  onMounted(() => {
+    ECharts.init(chartRef.value).setOption({
+      series: [
+        {
+          type: 'liquidFill',
+          data: [0.6, 0.5, 0.4, 0.3],
+          radius: '75%',
+          animationDuration: 3,
+          animationDurationUpdate: 0,
+          outline: {
+            show: true,
+            borderDistance: 8,
+            itemStyle: {
+              color: 'none',
+              borderColor: '#30539A',
+              borderWidth: 4,
+              shadowBlur: 10,
+              shadowColor: 'rgba(0, 0, 0, 0.25)',
+            },
+          },
+        },
+      ],
+    })
+  })
+
+  // e-charts 水球图容器
+  const chartRef = ref<HTMLDivElement>()
 
   // 可预约人数
   const prePeople = ref<number>(99999)
@@ -82,7 +111,7 @@
 
     .e-chart-data {
       width: 100%;
-      height: 240px;
+      height: 200px;
     }
   }
 </style>
