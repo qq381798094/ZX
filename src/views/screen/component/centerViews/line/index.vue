@@ -78,8 +78,8 @@
 
 <style scoped lang="scss">
   .line-container {
-    margin: 0 25px 10px 25px;
-    width: 100%;
+    margin: 0 0 10px 15px;
+    width: 96%;
     height: 100%;
     background: url(../../../images/dataScreen-main-cb.png) no-repeat;
     background-size: 100% 100%;
