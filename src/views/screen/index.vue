@@ -17,7 +17,11 @@
           <Map class="component-map" />
           <Line class="component-line" />
         </div>
-        <div class="right">右侧</div>
+        <div class="right">
+          <Order class="component-order" />
+          <Show class="component-show" />
+          <Statistic class="component-statistic" />
+        </div>
       </div>
     </div>
   </div>
@@ -28,11 +32,17 @@
   import { ref, onMounted } from 'vue'
   /** 组件引入 */
   import Top from './component/topView/index.vue'
+  // 左侧
   import Tourist from './component/bottomViews/tourist/index.vue'
   import Sex from './component/bottomViews/sex/index.vue'
   import Age from './component/bottomViews/age/index.vue'
+  // 中间
   import Map from './component/centerViews/map/index.vue'
   import Line from './component/centerViews/line/index.vue'
+  // 右侧
+  import Order from './component/bottomViews/order/index.vue'
+  import Show from './component/bottomViews/show/index.vue'
+  import Statistic from './component/bottomViews/statistic/index.vue'
 
   onMounted(() => {
     changeScale()
@@ -115,6 +125,18 @@
 
         .right {
           flex: 1;
+          display: flex;
+          flex-direction: column;
+
+          .component-order {
+            flex: 1.5;
+          }
+          .component-show {
+            flex: 1;
+          }
+          .component-statistic {
+            flex: 1;
+          }
         }
       }
     }
