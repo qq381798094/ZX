@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+
+<script type="module">
+import {sys} from "./sys.js"
+import {socket} from "./socket.js"
+
+// 发布订阅类
+class EventEmitter {
+    constructor() {
+        this.events = {} // 'key' : fn[]
+    }
+
+    // 添加订阅方法
+    on(type, cb) {
+        if(!this.events[type]) {
+            this.events[type] = [cb]
+        } else {
+            this.events[type].push(cb)
+        }
+    }
+
+    // 添加订阅，执行一次就销毁
+    once(type, cb) {
+        const fn = (...args) => {
+            cb(...args)
+            this.off(type, fn)
+        }
+        this.on(type, fn)
+    }
+
+    // 负责调用事件对应的回调函数
+    emit(type, ...args) {
+        if(!this.events[type]) {
+            return
+        } else {
+            this.events[type].forEach((item) => {
+                item(...args);
+            })
+        }
+        // console.log(this.events);
+    }
+
+    // 删除发布的订阅
+    off(type, cb) {
+        if(!this.events[type]) {
+            return 
+        } else {
+            this.events[type] = this.events[type].filter((item) => item !== cb)
+        }
+    }
+}
+
+// 开启一个订阅-发布
+let ev = new EventEmitter();
+
+const fn1 = (...args) => { 
+    console.log(`有人调用了fn1 ${args.length === 0 ? '' : '并携带了'}`, ...args) 
+}
+const fn11 = (a, b, c) => { console.log(`有人调用了fn11`, a, b, c) }
+const fn2 = (...args) => { console.log(...args, '有人调用了fn2') }
+const fn3 = (...args) => { console.log(...args, '有人调用了fn3') }
+
+// 用户： 添加了这两个订阅
+// a.js  
+// ev.on('message', fn1)
+
+// // b.js
+// ev.on('message', fn11)
+
+// // c.js
+// ev.once('message', fn2)
+
+// // 服务器通知
+// ev.emit('message', '即将关闭服务器', 111, 222)
+
+// sys.js
+
+// socket.js
+
+sys()
+socket()
+</script>
+</html>
