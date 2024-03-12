@@ -21,13 +21,21 @@
       <el-table-column label="操作" align="center" fixed="right">
         <template #default="{ row }">
           <el-button
+            v-has="`btn.Sku.updown`"
             @click="handleSaleOption(row)"
             :icon="row.isSale === 1 ? Bottom : Top"
             :type="row.isSale === 1 ? 'info' : 'success'"
             size="small"
           />
-          <el-button @click="handleUpdateOption" :icon="Edit" type="primary" size="small" />
           <el-button
+            v-has="`btn.Sku.update`"
+            @click="handleUpdateOption"
+            :icon="Edit"
+            type="primary"
+            size="small"
+          />
+          <el-button
+            v-has="`btn.Sku.detail`"
             @click="handleShowGoodsInfoDrawer(row)"
             :icon="InfoFilled"
             type="info"
@@ -39,7 +47,7 @@
             width="200"
           >
             <template #reference>
-              <el-button :icon="Delete" type="danger" size="small" />
+              <el-button v-has="`btn.Sku.remove`" :icon="Delete" type="danger" size="small" />
             </template>
           </el-popconfirm>
         </template>

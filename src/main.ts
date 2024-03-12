@@ -19,6 +19,8 @@ import 'virtual:svg-icons-register'
 import '@/styles/index.scss'
 // // 引入需要注册的全局组件
 import GlobalComponent from '@/components'
+// 引入自定义指令
+import { isHasButton } from '@/directives/has'
 
 import App from './App.vue'
 
@@ -37,5 +39,8 @@ app.use(router)
 app.use(ElementPlus, {
   locale: zhCn,
 })
+
+// 挂载指令
+isHasButton(app)
 
 app.mount('#app')

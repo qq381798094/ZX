@@ -34,7 +34,6 @@ router.beforeEach(async (to, from, next) => {
         // 没有用户信息，则表示刷新了页面，仓库进行更新，需要重新请求用户信息
         try {
           await userStore.getUserInfo()
-          console.log(to)
           next({ ...to })
         } catch (error) {
           // TOKEN 过期，需要重新登录

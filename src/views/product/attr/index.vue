@@ -8,6 +8,7 @@
       <el-card class="result-card">
         <!-- 添加平台属性按钮 -->
         <el-button
+          v-has="`btn.Attr.add`"
           :icon="Plus"
           type="primary"
           :disabled="categoryStore.thirdCategoryId ? false : true"
@@ -31,6 +32,7 @@
             <template #default="{ row }">
               <!-- 编辑 -->
               <el-button
+                v-has="`btn.Attr.update`"
                 @click="handleEditAttribute(row)"
                 :icon="Edit"
                 type="warning"
@@ -38,6 +40,7 @@
               />
               <!-- 删除 -->
               <el-popconfirm
+                v-has="`btn.Attr.remove`"
                 :title="`您确定要删除${row.attrName}吗？`"
                 width="240"
                 :icon="DeleteFilled"
@@ -45,7 +48,7 @@
                 @confirm="handleDeleteAttribute(row.id)"
               >
                 <template #reference>
-                  <el-button :icon="Delete" type="danger" size="small" />
+                  <el-button v-has="`btn.Attr.remove`" :icon="Delete" type="danger" size="small" />
                 </template>
               </el-popconfirm>
             </template>

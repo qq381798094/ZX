@@ -2,7 +2,13 @@
   <div>
     <el-card class="box-card">
       <!-- 顶部添加品牌按钮 -->
-      <el-button type="primary" size="default" :icon="Plus" @click="openChangeOrCreateBrand({})">
+      <el-button
+        v-has="`btn.Trademark.add`"
+        @click="openChangeOrCreateBrand({})"
+        type="primary"
+        size="default"
+        :icon="Plus"
+      >
         添加品牌
       </el-button>
       <!-- 表格：展示已有品牌数据 -->
@@ -20,6 +26,7 @@
           <template #default="{ row }">
             <!-- 编辑 -->
             <el-button
+              v-has="`btn.Trademark.update`"
               type="warning"
               :icon="Edit"
               size="small"
@@ -34,7 +41,12 @@
               @confirm="deleteCurrentBrand(row)"
             >
               <template #reference>
-                <el-button type="danger" :icon="Delete" size="small" />
+                <el-button
+                  v-has="`btn.Trademark.remove`"
+                  type="danger"
+                  :icon="Delete"
+                  size="small"
+                />
               </template>
             </el-popconfirm>
           </template>

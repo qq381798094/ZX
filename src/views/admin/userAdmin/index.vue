@@ -25,8 +25,9 @@
     </el-card>
     <!-- 列表展示 卡片 -->
     <el-card class="show-card">
-      <el-button @click="handleAddUserData" type="primary">添加</el-button>
+      <el-button v-has="`btn.User.add`" @click="handleAddUserData" type="primary">添加</el-button>
       <el-button
+        v-has="`btn.User.remove`"
         @click="handleDelUsersData"
         type="danger"
         :disabled="delUserList.length > 0 ? false : true"
@@ -69,10 +70,22 @@
         />
         <el-table-column label="操作" width="270" align="center">
           <template #default="{ row }">
-            <el-button @click="handleDistributeJob(row)" :icon="User" type="primary" size="small">
+            <el-button
+              v-has="`btn.User.assgin`"
+              @click="handleDistributeJob(row)"
+              :icon="User"
+              type="primary"
+              size="small"
+            >
               分配角色
             </el-button>
-            <el-button @click="handleEditUserInfo(row)" :icon="Edit" type="warning" size="small">
+            <el-button
+              v-has="`btn.User.update`"
+              @click="handleEditUserInfo(row)"
+              :icon="Edit"
+              type="warning"
+              size="small"
+            >
               编辑
             </el-button>
             <el-popconfirm
@@ -81,7 +94,9 @@
               @confirm="handleDeleteUser(row)"
             >
               <template #reference>
-                <el-button :icon="Delete" type="danger" size="small">删除</el-button>
+                <el-button v-has="`btn.User.remove`" :icon="Delete" type="danger" size="small">
+                  删除
+                </el-button>
               </template>
             </el-popconfirm>
           </template>

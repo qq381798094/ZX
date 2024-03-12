@@ -26,6 +26,7 @@ export default defineStore('User', {
     return {
       username: '',
       avatar: '',
+      buttons: [], // 当前用户权限按钮
     }
   },
   actions: {
@@ -45,12 +46,15 @@ export default defineStore('User', {
     // 获取用户信息
     async getUserInfo() {
       const result: IUserInfoResponseData = await requestUserInfoAPI()
-      const { routes } = result.data
+      const { routes, buttons } = result.data
+      console.log(buttons)
 
       if (result.code === 200) {
         // 在仓库中设置用户名以及用户头像
         this.username = result.data.name
         this.avatar = result.data.avatar
+        // 保存可用按钮的权限
+        this.buttons = buttons
         // 根据返回用户信息去过滤路由数据
         const filteredAsyncRoutes = filterAsyncRoute(cloneDeep(asyncRoutes), routes)
         useMenuStore().setMenuRoutes([...constantRoutes, ...filteredAsyncRoutes, ...anyRoutes])

@@ -26,7 +26,9 @@
     <!-- 展示卡片 -->
     <el-card class="card-display">
       <!-- 添加角色 -->
-      <el-button @click="handleRoleInfo" :icon="Plus" type="primary">添加角色</el-button>
+      <el-button v-has="`btn.Role.add`" @click="handleRoleInfo" :icon="Plus" type="primary">
+        添加角色
+      </el-button>
       <!-- 表格 -->
       <el-table :data="roleList" class="table-box" border stripe>
         <el-table-column label="#" width="100" type="index" align="center" />
@@ -54,10 +56,22 @@
         />
         <el-table-column label="操作" align="center">
           <template #default="{ row }">
-            <el-button @click="handlePowerDistribute(row)" :icon="User" type="primary" size="small">
+            <el-button
+              v-has="`btn.Role.assgin`"
+              @click="handlePowerDistribute(row)"
+              :icon="User"
+              type="primary"
+              size="small"
+            >
               权限分配
             </el-button>
-            <el-button @click="handleRoleInfo(row)" :icon="Edit" type="warning" size="small">
+            <el-button
+              v-has="`btn.Role.update`"
+              @click="handleRoleInfo(row)"
+              :icon="Edit"
+              type="warning"
+              size="small"
+            >
               编辑
             </el-button>
             <el-popconfirm
@@ -66,7 +80,9 @@
               width="220"
             >
               <template #reference>
-                <el-button :icon="Delete" type="danger" size="small">删除</el-button>
+                <el-button v-has="`btn.Role.remove`" :icon="Delete" type="danger" size="small">
+                  删除
+                </el-button>
               </template>
             </el-popconfirm>
           </template>

@@ -7,6 +7,7 @@
       <el-card class="card-box">
         <!-- 添加 SPU 按钮 -->
         <el-button
+          v-has="`btn.Spu.add`"
           type="primary"
           :icon="Plus"
           :disabled="categoryStore.thirdCategoryId ? false : true"
@@ -54,7 +55,13 @@
                 @confirm="delCurrentData(row.id)"
               >
                 <template #reference>
-                  <el-button size="small" type="danger" :icon="Delete" title="删除当前 SPU" />
+                  <el-button
+                    v-has="`btn.Spu.delete`"
+                    size="small"
+                    type="danger"
+                    :icon="Delete"
+                    title="删除当前 SPU"
+                  />
                 </template>
               </el-popconfirm>
             </template>
