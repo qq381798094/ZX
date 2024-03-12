@@ -1,10 +1,11 @@
 /** vue-router 插件配置路由 */
 import { createRouter, createWebHashHistory } from 'vue-router'
-import routes from './routes'
+// 引入路由
+import { constantRoutes } from './routes'
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: routes,
+  routes: constantRoutes,
   // 切换时滚动行为
   scrollBehavior() {
     return {

@@ -1,4 +1,7 @@
-export default [
+import { RouteRecordRaw } from 'vue-router'
+
+// 常量路由
+export const constantRoutes: Array<RouteRecordRaw> = [
   // 登录
   {
     path: '/login',
@@ -42,6 +45,20 @@ export default [
       icon: 'Histogram',
     },
   },
+  // 404路由
+  {
+    path: '/404',
+    component: () => import('@/views/404/index.vue'),
+    name: '404',
+    meta: {
+      title: '404',
+      hidden: true,
+    },
+  },
+]
+
+// 异步路由
+export const asyncRoutes: Array<RouteRecordRaw> = [
   // 权限管理 -> 一级路由
   {
     path: '/admin',
@@ -140,16 +157,11 @@ export default [
       },
     ],
   },
-  // 404路由
-  {
-    path: '/404',
-    component: () => import('@/views/404/index.vue'),
-    name: '404',
-    meta: {
-      title: '404',
-      hidden: true,
-    },
-  },
+]
+
+// 任意路由
+
+export const anyRoutes: Array<RouteRecordRaw> = [
   // 任意路由
   {
     path: '/:pathMatch(.*)*',

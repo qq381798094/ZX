@@ -1,6 +1,8 @@
 /** 全局路由鉴权设置 */
 import router from '@/router'
 /** 进度条引入 */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 NProgress.configure({ showSpinner: false })
@@ -32,7 +34,8 @@ router.beforeEach(async (to, from, next) => {
         // 没有用户信息，则表示刷新了页面，仓库进行更新，需要重新请求用户信息
         try {
           await userStore.getUserInfo()
-          next()
+          console.log(to)
+          next({ ...to })
         } catch (error) {
           // TOKEN 过期，需要重新登录
           ElMessageBox.alert('用户身份过期，需要重新登录', '提示', {
@@ -62,7 +65,8 @@ router.beforeEach(async (to, from, next) => {
 })
 
 // 全局后置守卫
-router.afterEach((to, from, next) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+router.afterEach((_to, from, _next) => {
   // eslint-disable-next-line no-constant-condition
   document.title = 'undefined' ? `${setting.title}` : `${setting.title} - ${from.meta.title}`
   // 关闭进度条

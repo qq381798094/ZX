@@ -3,16 +3,25 @@
  */
 import { defineStore } from 'pinia'
 /** 导入 routes 常量 */
-import constantRoute from '@/router/routes'
+import { constantRoutes } from '@/router/routes'
 /** 导入类型 */
 import type { IMenuType } from './types/menuType'
 
 export default defineStore('menu', {
   state(): IMenuType {
     return {
-      menuRoutes: constantRoute,
+      menuRoutes: constantRoutes,
     }
   },
-  actions: {},
+  actions: {
+    // 设置路由对象数组
+    setMenuRoutes(newMenu: any[]) {
+      this.menuRoutes = newMenu
+    },
+    // 将对象恢复成初始状态
+    clearMenuRoutes() {
+      this.menuRoutes = constantRoutes
+    },
+  },
   getters: {},
 })

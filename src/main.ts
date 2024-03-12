@@ -24,14 +24,14 @@ import App from './App.vue'
 
 const app = createApp(App)
 
+// 挂载 pinia
+app.use(pinia)
+
 // 挂载注册全局组件的插件
 app.use(GlobalComponent)
 
 // 挂载 router
 app.use(router)
-
-// 挂载 pinia
-app.use(pinia)
 
 // 挂载 element-plus
 app.use(ElementPlus, {
